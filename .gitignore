@@ -2,6 +2,10 @@
 # Git Ignore - ChainTrace-I4C (FastAPI, React, Vite, Docker, PostgreSQL)
 # ==============================================================================
 
+# Large Elliptic++ real dataset files (if downloaded from Google Drive)
+# The synthetic 5K-tx subset is tracked; real 203K-tx files are excluded
+backend/data/elliptic_real/
+
 # Python & Bytecode
 __pycache__/
 *.py[cod]

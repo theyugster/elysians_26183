@@ -1,100 +1,89 @@
 /**
  * ChainTrace-I4C API Service Client
+ * Updated for Elliptic++ Dataset Integration
  */
 
 export const API_BASE_URL = 'http://localhost:8000/api';
 export const HEALTH_URL = 'http://localhost:8000/health';
 
 export const DEMO_TOPOLOGY = {
-  target: "0xVic_9011",
-  terminalExchange: "CryptoGlobal Exchange (Hot Wallet 04)",
+  target: "tx_1",
+  terminalExchange: "Exchange Off-Ramp Wallet",
   traversalTimeMs: 4.85,
   nodesCount: 6,
-  prunedDustBranches: 1,
+  prunedDustBranches: 0,
   nodes: [
     {
-      id: "0xVic_9011",
-      label: "Victim Target Wallet",
+      id: "demo_wallet_1",
+      label: "Source Wallet",
       type: "victim",
       riskScore: 5,
-      balance: "120.50 USDT",
+      balance: "0.12 BTC",
       cluster: "Origin Source Wallet",
       exchangeName: null,
       jurisdiction: null,
       heuristics: { vaspMatch: 0, sweeper: 0, gasSponsor: 0, fanIn: 0 }
     },
     {
-      id: "0xMule_A1",
-      label: "Hop Mule e_A1",
+      id: "demo_wallet_2",
+      label: "Mule Layer 1",
       type: "mule",
-      riskScore: 68,
-      balance: "8,400.00 USDT",
-      cluster: "Layering Mule Account",
+      riskScore: 72,
+      balance: "2.5 BTC",
+      cluster: "Layering Mule",
       exchangeName: null,
       jurisdiction: null,
-      heuristics: { vaspMatch: 10, sweeper: 85, gasSponsor: 95, fanIn: 15 }
+      heuristics: { vaspMatch: 10, sweeper: 85, gasSponsor: 0, fanIn: 15 }
     },
     {
-      id: "0xMule_A2",
-      label: "Hop Mule e_A2",
+      id: "demo_wallet_3",
+      label: "Mule Layer 2",
       type: "mule",
-      riskScore: 74,
-      balance: "14,200.00 USDT",
-      cluster: "Layering Mule Account",
+      riskScore: 78,
+      balance: "4.8 BTC",
+      cluster: "Layering Mule",
       exchangeName: null,
       jurisdiction: null,
-      heuristics: { vaspMatch: 10, sweeper: 90, gasSponsor: 75, fanIn: 15 }
+      heuristics: { vaspMatch: 10, sweeper: 88, gasSponsor: 0, fanIn: 15 }
     },
     {
-      id: "0xMule_B1",
-      label: "Hop Mule e_B1",
+      id: "demo_wallet_4",
+      label: "Consolidator",
       type: "mule",
-      riskScore: 82,
-      balance: "23,100.00 USDT",
-      cluster: "Layering Mule Account",
-      exchangeName: null,
-      jurisdiction: null,
-      heuristics: { vaspMatch: 10, sweeper: 88, gasSponsor: 75, fanIn: 15 }
-    },
-    {
-      id: "0xConsol_99",
-      label: "Hop Mule l_99",
-      type: "mule",
-      riskScore: 92,
-      balance: "94,800.00 USDT",
+      riskScore: 88,
+      balance: "12.3 BTC",
       cluster: "Consolidation Hub",
       exchangeName: null,
       jurisdiction: null,
-      heuristics: { vaspMatch: 10, sweeper: 95, gasSponsor: 40, fanIn: 96 }
+      heuristics: { vaspMatch: 10, sweeper: 92, gasSponsor: 0, fanIn: 90 }
     },
     {
-      id: "0xVASP_GlobalEx",
-      label: "CryptoGlobal Exchange (Hot Wallet 04)",
+      id: "demo_wallet_5",
+      label: "Exchange Off-Ramp",
       type: "exchange",
-      riskScore: 97,
-      balance: "1,420,000.00 USDT",
+      riskScore: 95,
+      balance: "450.0 BTC",
       cluster: "Terminal Off-Ramp Exchange",
-      exchangeName: "CryptoGlobal Exchange (Hot Wallet 04)",
-      jurisdiction: "Seychelles / Non-Compliant",
-      heuristics: { vaspMatch: 100, sweeper: 95, gasSponsor: 40, fanIn: 96 }
+      exchangeName: "Exchange Off-Ramp Wallet",
+      jurisdiction: "Offshore / Non-Compliant",
+      heuristics: { vaspMatch: 100, sweeper: 95, gasSponsor: 0, fanIn: 96 }
     }
   ],
   links: [
-    { source: "0xVic_9011", target: "0xMule_A1", amount: "48,500.00 USDT", txHash: "0x71fb_a301", suspiciousScore: 75, latency: "42s" },
-    { source: "0xMule_A1", target: "0xMule_A2", amount: "24,000.00 USDT", txHash: "0x88ea_120f", suspiciousScore: 75, latency: "18s" },
-    { source: "0xMule_A1", target: "0xMule_B1", amount: "23,800.00 USDT", txHash: "0x99cb_e843", suspiciousScore: 75, latency: "22s" },
-    { source: "0xMule_A2", target: "0xConsol_99", amount: "23,950.00 USDT", txHash: "0x33dc_91bc", suspiciousScore: 75, latency: "12s" },
-    { source: "0xMule_B1", target: "0xConsol_99", amount: "23,720.00 USDT", txHash: "0x44fa_7302", suspiciousScore: 75, latency: "15s" },
-    { source: "0xConsol_99", target: "0xVASP_GlobalEx", amount: "47,500.00 USDT", txHash: "0x10fe_ca41", suspiciousScore: 90, latency: "8s" }
+    { source: "demo_wallet_1", target: "demo_wallet_2", amount: "2.50 BTC", txHash: "tx_1", suspiciousScore: 72, latency: "120s" },
+    { source: "demo_wallet_2", target: "demo_wallet_3", amount: "1.20 BTC", txHash: "tx_2", suspiciousScore: 78, latency: "45s" },
+    { source: "demo_wallet_2", target: "demo_wallet_4", amount: "1.25 BTC", txHash: "tx_3", suspiciousScore: 85, latency: "30s" },
+    { source: "demo_wallet_3", target: "demo_wallet_4", amount: "1.15 BTC", txHash: "tx_4", suspiciousScore: 82, latency: "22s" },
+    { source: "demo_wallet_4", target: "demo_wallet_5", amount: "12.10 BTC", txHash: "tx_5", suspiciousScore: 92, latency: "10s" }
   ]
 };
 
 export const PRUNED_DUST_NODE = {
-  id: "0xDust_Pruned",
-  label: "0xDust_Pruned (700 USDT)",
+  id: "dust_pruned",
+  label: "Dust Transaction (Pruned)",
   type: "dust",
-  riskScore: 35,
-  balance: "42.00 USDT",
+  riskScore: 15,
+  balance: "0.0001 BTC",
   cluster: "Pruned Dust Branch (<3%)",
   exchangeName: null,
   jurisdiction: null,
@@ -102,12 +91,12 @@ export const PRUNED_DUST_NODE = {
 };
 
 export const PRUNED_DUST_LINK = {
-  source: "0xVic_9011",
-  target: "0xDust_Pruned",
-  amount: "700.00 USDT",
-  txHash: "0x22ab_9900",
-  suspiciousScore: 30,
-  latency: "120s"
+  source: "demo_wallet_1",
+  target: "dust_pruned",
+  amount: "0.0001 BTC",
+  txHash: "tx_dust",
+  suspiciousScore: 10,
+  latency: "3600s"
 };
 
 export async function checkBackendHealth() {
@@ -144,12 +133,22 @@ export async function fetchDatasetStatus() {
   }
   return {
     status: "STANDALONE_CACHE",
-    total_transactions: 36,
-    unique_wallets: 38,
-    graph_edges: 35,
-    culprits_detected: 19,
-    dataset_file: "blockchain_transactions.csv"
+    total_transactions: 5000,
+    unique_wallets: 586,
+    graph_edges: 1405,
+    culprits_detected: 0,
+    dataset_file: "Elliptic++ (offline)"
   };
+}
+
+export async function fetchDatasetInfo() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/graph-ml/dataset/info`);
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("Dataset info error:", e);
+  }
+  return null;
 }
 
 export async function loadDataset(datasetPath = null) {
@@ -166,7 +165,7 @@ export async function loadDataset(datasetPath = null) {
   return null;
 }
 
-export async function fetchGraphAnalysis(target = "0xVic_9011", hops = 5) {
+export async function fetchGraphAnalysis(target = "tx_1", hops = 3) {
   try {
     const res = await fetch(`${API_BASE_URL}/graph-ml/analyze?target=${encodeURIComponent(target)}&hops=${hops}`);
     if (res.ok) return await res.json();
@@ -178,7 +177,7 @@ export async function fetchGraphAnalysis(target = "0xVic_9011", hops = 5) {
 
 export async function fetchScoredTransactions(minScore = 0, classification = null) {
   try {
-    let url = `${API_BASE_URL}/graph-ml/transactions/scored?min_score=${minScore}`;
+    let url = `${API_BASE_URL}/graph-ml/transactions/scored?min_score=${minScore}&limit=500`;
     if (classification) url += `&classification=${encodeURIComponent(classification)}`;
     const res = await fetch(url);
     if (res.ok) return await res.json();

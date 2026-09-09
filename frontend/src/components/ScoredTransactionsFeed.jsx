@@ -72,7 +72,7 @@ export default function ScoredTransactionsFeed({ transactions = [] }) {
                 Transactions Scored Against Graph Model
               </h2>
               <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                Every transaction evaluated with calibrated sigmoid probability, topological convergence &amp; velocity factors
+                {transactions.length.toLocaleString()} Elliptic++ transactions scored by Random Forest + Graph Topological features
               </span>
             </div>
           </div>
@@ -160,12 +160,14 @@ export default function ScoredTransactionsFeed({ transactions = [] }) {
         }}>
           <thead>
             <tr style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', fontSize: '0.7rem' }}>
-              <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 700 }}>Tx Hash</th>
+              <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 700 }}>Tx ID</th>
+              <th style={{ padding: '8px 12px', textAlign: 'center', fontWeight: 700 }}>Step</th>
+              <th style={{ padding: '8px 12px', textAlign: 'center', fontWeight: 700 }}>Elliptic Class</th>
               <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 700 }}>Flow Path</th>
               <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 700 }}>Amount</th>
-              <th style={{ padding: '8px 12px', textAlign: 'center', fontWeight: 700 }}>Graph ML Score</th>
+              <th style={{ padding: '8px 12px', textAlign: 'center', fontWeight: 700 }}>RF Score</th>
               <th style={{ padding: '8px 12px', textAlign: 'center', fontWeight: 700 }}>Classification</th>
-              <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 700 }}>Contributing Risk Factors</th>
+              <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 700 }}>Risk Factors</th>
             </tr>
           </thead>
           <tbody>
@@ -186,7 +188,7 @@ export default function ScoredTransactionsFeed({ transactions = [] }) {
                     transition: 'background-color 0.1s ease'
                   }}
                 >
-                  {/* Tx Hash */}
+                  {/* Tx ID */}
                   <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--text-primary)' }}>
@@ -195,34 +197,43 @@ export default function ScoredTransactionsFeed({ transactions = [] }) {
                       <button
                         onClick={() => copyToClipboard(tx.tx_hash, `tx-${idx}`)}
                         style={{ background: 'none', border: 'none', color: 'var(--text-light)', cursor: 'pointer' }}
-                        title="Copy Tx Hash"
+                        title="Copy Tx ID"
                       >
                         {copiedKey === `tx-${idx}` ? <Check size={12} color="var(--success)" /> : <Copy size={12} />}
                       </button>
                     </div>
-                    {tx.latency_seconds > 0 && (
-                      <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '3px', marginTop: '2px' }}>
-                        <Clock size={10} /> Latency: {tx.latency_seconds}s
-                      </span>
-                    )}
+                  </td>
+
+                  {/* Time Step */}
+                  <td style={{ padding: '10px 12px', textAlign: 'center', fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                    {tx.time_step || '—'}
+                  </td>
+
+                  {/* Elliptic Class */}
+                  <td style={{ padding: '10px 12px', textAlign: 'center' }}>
+                    <span style={{
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      fontSize: '0.7rem',
+                      fontWeight: 700,
+                      backgroundColor: tx.elliptic_class === 1 ? '#fee2e2' : (tx.elliptic_class === 2 ? '#dcfce7' : '#f1f5f9'),
+                      color: tx.elliptic_class === 1 ? '#b91c1c' : (tx.elliptic_class === 2 ? '#15803d' : '#64748b')
+                    }}>
+                      {tx.elliptic_class === 1 ? 'Illicit' : (tx.elliptic_class === 2 ? 'Licit' : 'Unknown')}
+                    </span>
                   </td>
 
                   {/* Flow Path */}
                   <td style={{ padding: '10px 12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'var(--font-mono)', fontSize: '0.74rem' }}>
-                      <span style={{ color: tx.from_address.includes('Vic') ? 'var(--primary)' : 'var(--text-primary)' }}>
-                        {tx.from_address}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'var(--font-mono)', fontSize: '0.72rem' }}>
+                      <span style={{ color: 'var(--text-primary)' }} title={tx.from_address}>
+                        {tx.from_address.length > 12 ? tx.from_address.slice(0, 6) + '…' + tx.from_address.slice(-4) : tx.from_address}
                       </span>
                       <ArrowRight size={12} color="var(--text-light)" />
-                      <span style={{ color: tx.to_address.includes('VASP') ? 'var(--danger)' : 'var(--text-primary)', fontWeight: 700 }}>
-                        {tx.to_address}
+                      <span style={{ color: isFraud ? 'var(--danger)' : 'var(--text-primary)', fontWeight: 700 }} title={tx.to_address}>
+                        {tx.to_address.length > 12 ? tx.to_address.slice(0, 6) + '…' + tx.to_address.slice(-4) : tx.to_address}
                       </span>
                     </div>
-                    {tx.gas_sponsor && (
-                      <span style={{ fontSize: '0.66rem', color: 'var(--purple)', display: 'block', marginTop: '2px' }}>
-                        Gas Sponsor: {tx.gas_sponsor}
-                      </span>
-                    )}
                   </td>
 
                   {/* Amount */}

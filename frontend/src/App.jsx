@@ -38,7 +38,7 @@ import {
 
 export default function App() {
   // Application State
-  const [targetAddress, setTargetAddress] = useState('0xVic_9011');
+  const [targetAddress, setTargetAddress] = useState('tx_1');
   const [traceData, setTraceData] = useState(DEMO_TOPOLOGY);
   const [selectedNode, setSelectedNode] = useState(DEMO_TOPOLOGY.nodes.find(n => n.type === 'exchange') || DEMO_TOPOLOGY.nodes[0]);
   const [isBackendOnline, setIsBackendOnline] = useState(false);
@@ -112,7 +112,7 @@ export default function App() {
     if (mlAnalysis && mlAnalysis.nodes && mlAnalysis.nodes.length > 0) {
       // Map ML analysis output format to traceData format expected by canvas
       const formattedData = {
-        target: mlAnalysis.target,
+        target: query,
         terminalExchange: mlAnalysis.terminalExchange || 'CryptoGlobal Exchange (Hot Wallet 04)',
         traversalTimeMs: 4.8,
         nodesCount: mlAnalysis.total_nodes,
@@ -147,7 +147,7 @@ export default function App() {
     } else {
       // Fallback to legacy trace endpoint
       const data = await fetchForensicTrace(query);
-      setTraceData(data);
+      setTraceData({ ...data, target: query });
       setTargetAddress(query);
       const defaultSelection = data.nodes.find(n => n.type === 'exchange') || data.nodes[0];
       setSelectedNode(defaultSelection);
@@ -166,7 +166,7 @@ export default function App() {
 
   // Initial Trace Execution
   useEffect(() => {
-    handleRunTrace('0xVic_9011');
+    handleRunTrace('tx_1');
   }, []);
 
   // Auto-Refresh Poller
@@ -258,7 +258,7 @@ export default function App() {
               ChainTrace<span>-I4C</span>
             </div>
             <div className="brand-sub">
-              Graph ML Fraud Detection &amp; KYC Unmasking Intelligence (SIH 2026)
+              Graph ML Fraud Detection &amp; Culprit KYC Intelligence — Elliptic++ Dataset (SIH 2026)
             </div>
           </div>
         </div>
@@ -364,7 +364,7 @@ export default function App() {
               value={targetAddress}
               onChange={e => setTargetAddress(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleRunTrace()}
-              placeholder="Enter Target Wallet (e.g. 0xVic_9011, 0xConsol_99)..."
+              placeholder="Enter Target Tx ID (e.g. tx_1, tx_50) or Wallet Address..."
               spellCheck={false}
             />
             {targetAddress && (
@@ -382,22 +382,22 @@ export default function App() {
         <div className="preset-pills">
           <span style={{ fontSize: '0.74rem', fontWeight: 600, color: 'var(--text-muted)' }}>Presets:</span>
           <button
-            className={`preset-pill-btn ${targetAddress === '0xVic_9011' ? 'active' : ''}`}
-            onClick={() => handleRunTrace('0xVic_9011')}
+            className={`preset-pill-btn ${targetAddress === 'tx_1' ? 'active' : ''}`}
+            onClick={() => handleRunTrace('tx_1')}
           >
-            Victim Exfiltration (9011)
+            Illicit Transaction 1
           </button>
           <button
-            className={`preset-pill-btn ${targetAddress === '0xConsol_99' ? 'active' : ''}`}
-            onClick={() => handleRunTrace('0xConsol_99')}
+            className={`preset-pill-btn ${targetAddress === 'tx_50' ? 'active' : ''}`}
+            onClick={() => handleRunTrace('tx_50')}
           >
-            Syndicate Consolidator 99
+            Illicit Cluster (tx_50)
           </button>
           <button
-            className={`preset-pill-btn ${targetAddress === '0xVASP_GlobalEx' ? 'active' : ''}`}
-            onClick={() => handleRunTrace('0xVASP_GlobalEx')}
+            className={`preset-pill-btn ${targetAddress === 'tx_500' ? 'active' : ''}`}
+            onClick={() => handleRunTrace('tx_500')}
           >
-            Terminal VASP Hot Wallet
+            Licit Transaction 500
           </button>
         </div>
 
@@ -413,7 +413,7 @@ export default function App() {
         }}>
           <Database size={13} color="var(--primary)" />
           <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-            Dataset: <strong>{datasetStatus?.dataset_file || 'blockchain_transactions.csv'}</strong> ({datasetStatus?.total_transactions || 36} txs)
+            Dataset: <strong>{datasetStatus?.dataset_file || 'Elliptic++ (5,000 txs)'}</strong> ({datasetStatus?.total_transactions?.toLocaleString() || '5,000'} txs)
           </span>
           <button
             onClick={handleReloadDataset}
@@ -518,7 +518,7 @@ export default function App() {
                 <div className="stage-top-bar">
                   <div>
                     <h2 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                      Real-Time Graph ML Fraud Topology Canvas
+                      Real-Time Graph ML Fraud Topology — Elliptic++ Random Forest
                     </h2>
                     <span style={{ fontSize: '0.73rem', color: 'var(--text-muted)' }}>
                       Edges scored by model: <span style={{ color: '#ef4444', fontWeight: 700 }}>Red &ge; 70%</span> &bull; <span style={{ color: '#f59e0b', fontWeight: 700 }}>Amber 40-69%</span> &bull; <span style={{ color: '#64748b', fontWeight: 700 }}>Slate &lt; 40%</span>

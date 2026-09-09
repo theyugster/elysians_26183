@@ -9,7 +9,8 @@ from app.schemas.graph_fraud import (
     KYCResolutionResponse,
     GraphDatasetStatusResponse,
     GraphAnalysisResponse,
-    LoadDatasetPayload
+    LoadDatasetPayload,
+    DatasetInfoResponse
 )
 
 router = APIRouter(prefix="/graph-ml", tags=["Graph ML Fraud & KYC Engine"])
@@ -17,16 +18,13 @@ router = APIRouter(prefix="/graph-ml", tags=["Graph ML Fraud & KYC Engine"])
 @router.post("/dataset/load", response_model=GraphDatasetStatusResponse)
 async def load_transaction_dataset(payload: Optional[LoadDatasetPayload] = None):
     """
-    Loads a blockchain transaction dataset into the Graph Fraud ML Engine,
-    extracts topological features, and scores all transactions.
+    Loads the Elliptic++ blockchain transaction dataset into the Graph Fraud ML Engine,
+    trains Random Forest on labeled data, extracts topological features, and scores all transactions.
     """
     custom_path = payload.dataset_path if payload else None
     try:
         summary = graph_model_engine.load_dataset(custom_path=custom_path)
-        return {
-            **summary,
-            "dataset_file": os.path.basename(custom_path or graph_model_engine.dataset_path)
-        }
+        return summary
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -35,27 +33,35 @@ async def load_transaction_dataset(payload: Optional[LoadDatasetPayload] = None)
 
 @router.get("/dataset/status", response_model=GraphDatasetStatusResponse)
 async def get_dataset_status():
-    """Returns current status and metrics of the loaded graph dataset."""
+    """Returns current status and metrics of the loaded Elliptic++ graph dataset."""
     if not graph_model_engine.is_loaded:
         graph_model_engine.load_dataset()
 
     return {
         "status": "ACTIVE",
         "total_transactions": len(graph_model_engine.scored_transactions),
-        "unique_wallets": graph_model_engine.g.number_of_nodes(),
+        "unique_wallets": graph_model_engine.dataset_info.get("unique_wallets", 0),
         "graph_edges": graph_model_engine.g.number_of_edges(),
         "culprits_detected": len(graph_model_engine.culprits),
-        "dataset_file": os.path.basename(graph_model_engine.dataset_path)
+        "dataset_file": "Elliptic++ (5,000 txs, 183 features, Random Forest)"
     }
+
+@router.get("/dataset/info", response_model=DatasetInfoResponse)
+async def get_dataset_info():
+    """Returns detailed Elliptic++ dataset statistics including class distribution and model metrics."""
+    if not graph_model_engine.is_loaded:
+        graph_model_engine.load_dataset()
+
+    return graph_model_engine.get_dataset_info()
 
 @router.get("/analyze", response_model=GraphAnalysisResponse)
 async def analyze_graph(
-    target: str = Query(default="0xVic_9011", description="Target root wallet or cluster address"),
-    hops: int = Query(default=5, ge=1, le=10, description="Max BFS propagation hops")
+    target: str = Query(default="tx_1", description="Target transaction ID (e.g. tx_1) or wallet address"),
+    hops: int = Query(default=3, ge=1, le=10, description="Max BFS propagation hops")
 ):
     """
-    Runs Graph ML inference starting from target wallet.
-    Returns nodes and edges scored by the topological ensemble model.
+    Runs Graph ML inference starting from target wallet or transaction.
+    Returns nodes and edges scored by the Random Forest + graph-topological model.
     """
     if not graph_model_engine.is_loaded:
         graph_model_engine.load_dataset()
@@ -66,11 +72,12 @@ async def analyze_graph(
 @router.get("/transactions/scored", response_model=List[TransactionScoredResponse])
 async def list_scored_transactions(
     min_score: int = Query(default=0, ge=0, le=100, description="Minimum fraud score filter"),
-    classification: Optional[str] = Query(default=None, description="FRAUDULENT, SUSPICIOUS, or LEGITIMATE")
+    classification: Optional[str] = Query(default=None, description="FRAUDULENT, SUSPICIOUS, or LEGITIMATE"),
+    limit: int = Query(default=500, ge=1, le=5000, description="Max transactions to return")
 ):
     """
     Returns all dataset transactions evaluated and scored against the Graph Model,
-    complete with probability, calibrated fraud score, and graph risk factors.
+    complete with probability, calibrated fraud score, and risk factors.
     """
     if not graph_model_engine.is_loaded:
         graph_model_engine.load_dataset()
@@ -81,7 +88,7 @@ async def list_scored_transactions(
     if classification:
         txs = [t for t in txs if t["classification"].upper() == classification.upper()]
 
-    return txs
+    return txs[:limit]
 
 @router.get("/culprits/identified", response_model=List[CulpritProfileResponse])
 async def get_identified_culprits():

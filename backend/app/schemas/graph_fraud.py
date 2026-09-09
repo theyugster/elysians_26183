@@ -59,6 +59,8 @@ class TransactionScoredResponse(BaseModel):
     classification: str
     risk_factors: List[str]
     timestamp: Optional[str] = None
+    time_step: Optional[int] = None
+    elliptic_class: Optional[int] = None
 
 class GraphDatasetStatusResponse(BaseModel):
     status: str
@@ -67,6 +69,17 @@ class GraphDatasetStatusResponse(BaseModel):
     graph_edges: int
     culprits_detected: int
     dataset_file: str
+
+class DatasetInfoResponse(BaseModel):
+    total_transactions: int
+    total_edges: int
+    unique_wallets: int
+    num_features: int
+    timesteps: int
+    class_distribution: Dict[str, int]
+    graph_nodes: int
+    graph_edges: int
+    model_training_time_ms: float
 
 class LoadDatasetPayload(BaseModel):
     dataset_path: Optional[str] = None

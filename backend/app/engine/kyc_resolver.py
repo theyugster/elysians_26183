@@ -13,7 +13,7 @@ class KYCResolver:
 
     def __init__(self, kyc_path: Optional[str] = None):
         self.kyc_path = kyc_path or os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "..", "data", "kyc_records.json")
+            os.path.join(os.path.dirname(__file__), "..", "..", "data", "kyc_records_elliptic.json")
         )
         self.records: Dict[str, Dict[str, Any]] = {}
         self.is_loaded = False

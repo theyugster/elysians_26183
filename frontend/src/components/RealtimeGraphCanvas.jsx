@@ -2,6 +2,16 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { ZoomIn, ZoomOut, RotateCcw, Maximize2 } from 'lucide-react';
 import { PRUNED_DUST_NODE, PRUNED_DUST_LINK } from '../services/api';
 
+function getFocusNodeId(traceData) {
+  if (!traceData?.nodes?.length) return null;
+  if (traceData.nodes.some(node => node.id === traceData.target)) return traceData.target;
+
+  const matchingLink = traceData.links?.find(link => (
+    link.txHash === traceData.target || link.tx_hash === traceData.target
+  ));
+  return matchingLink?.source || traceData.nodes.find(node => node.type === 'victim')?.id || traceData.nodes[0].id;
+}
+
 export default function RealtimeGraphCanvas({
   traceData,
   selectedNode,
@@ -64,7 +74,7 @@ export default function RealtimeGraphCanvas({
 
     // Topological Column Placement by BFS Depth
     const depthMap = new Map();
-    const targetId = traceData.target;
+    const targetId = getFocusNodeId(traceData);
     depthMap.set(targetId, 0);
 
     // Queue BFS for depths
@@ -163,6 +173,7 @@ export default function RealtimeGraphCanvas({
       const nodes = nodesRef.current;
       const links = linksRef.current;
       const nodeMap = new Map(nodes.map(n => [n.id, n]));
+      const targetId = getFocusNodeId(traceData);
 
       // Physics Relaxation Step
       nodes.forEach(node => {
@@ -201,6 +212,9 @@ export default function RealtimeGraphCanvas({
         const isHighRisk = fScore >= 70 || target.type === 'exchange';
         const isSuspicious = fScore >= 40 && !isHighRisk;
         const isPruned = link.isPruned;
+        const isTargetLink = link.source === targetId || link.target === targetId;
+
+        ctx.globalAlpha = isTargetLink ? 1 : 0.42;
 
         // Bezier Curve
         const midX = (source.x + target.x) / 2;
@@ -264,7 +278,8 @@ export default function RealtimeGraphCanvas({
           }
         }
 
-        // Draw Amount Badge on Link Midpoint
+        if (!isTargetLink && !isHighRisk) return;
+
         const badgeX = (source.x + target.x) / 2;
         const badgeY = (source.y + target.y) / 2 - 8;
 
@@ -298,6 +313,10 @@ export default function RealtimeGraphCanvas({
       nodes.forEach(node => {
         const isSelected = selectedNode && selectedNode.id === node.id;
         const isPruned = node.isPruned;
+        const isTarget = node.id === targetId;
+        const nodeRadius = isTarget ? node.radius + 5 : node.radius;
+
+        ctx.globalAlpha = 1;
 
         let strokeColor = '#3b82f6';
         let badgeColor = '#2563eb';
@@ -325,11 +344,17 @@ export default function RealtimeGraphCanvas({
           initialLetter = 'M';
         }
 
+        if (isTarget) {
+          strokeColor = '#0f766e';
+          badgeColor = '#0f766e';
+          initialLetter = 'T';
+        }
+
         // Pulse Beacon on Terminal VASP
         if (node.type === 'exchange' && !isPruned) {
           const pulse = (Date.now() % 2000) / 2000;
           ctx.beginPath();
-          ctx.arc(node.x, node.y, node.radius + pulse * 18, 0, Math.PI * 2);
+          ctx.arc(node.x, node.y, nodeRadius + pulse * 18, 0, Math.PI * 2);
           ctx.strokeStyle = `rgba(239, 68, 68, ${0.4 * (1 - pulse)})`;
           ctx.lineWidth = 2;
           ctx.stroke();
@@ -338,14 +363,24 @@ export default function RealtimeGraphCanvas({
         // Selection Aura
         if (isSelected) {
           ctx.beginPath();
-          ctx.arc(node.x, node.y, node.radius + 8, 0, Math.PI * 2);
+          ctx.arc(node.x, node.y, nodeRadius + 8, 0, Math.PI * 2);
           ctx.fillStyle = 'rgba(37, 99, 235, 0.14)';
           ctx.fill();
         }
 
+        if (isTarget) {
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, nodeRadius + 12, 0, Math.PI * 2);
+          ctx.strokeStyle = '#0f172a';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
         // Main Node Circle
         ctx.beginPath();
-        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, nodeRadius, 0, Math.PI * 2);
         ctx.fillStyle = '#ffffff';
         ctx.strokeStyle = strokeColor;
         ctx.lineWidth = isSelected ? 3.5 : 2.5;
@@ -367,18 +402,24 @@ export default function RealtimeGraphCanvas({
         ctx.fillText(
           node.label.length > 20 ? `${node.label.slice(0, 18)}...` : node.label,
           node.x,
-          node.y - node.radius - 12
+          node.y - nodeRadius - 12
         );
 
         // Address & Balance (Below)
         ctx.font = '500 9.5px "JetBrains Mono", monospace';
         ctx.fillStyle = '#64748b';
-        ctx.fillText(`${node.id} (${node.balance})`, node.x, node.y + node.radius + 14);
+        ctx.fillText(`${node.id} (${node.balance})`, node.x, node.y + nodeRadius + 14);
+
+        if (isTarget) {
+          ctx.font = '700 9px "Inter", sans-serif';
+          ctx.fillStyle = '#0f172a';
+          ctx.fillText('TARGET WALLET', node.x, node.y - nodeRadius - 27);
+        }
 
         // Threat Score Badge on Top-Right Corner
         if (!isPruned) {
-          const bx = node.x + node.radius - 4;
-          const by = node.y - node.radius - 2;
+          const bx = node.x + nodeRadius - 4;
+          const by = node.y - nodeRadius - 2;
 
           ctx.fillStyle = badgeColor;
           ctx.beginPath();
@@ -389,8 +430,11 @@ export default function RealtimeGraphCanvas({
           ctx.fillStyle = '#ffffff';
           ctx.fillText(`${node.riskScore}`, bx + 11, by + 7);
         }
+
+        ctx.globalAlpha = 1;
       });
 
+      ctx.globalAlpha = 1;
       ctx.restore();
 
       animFrameIdRef.current = requestAnimationFrame(render);
@@ -402,7 +446,7 @@ export default function RealtimeGraphCanvas({
       running = false;
       if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
     };
-  }, [transform, selectedNode, isPlaying, playbackSpeed]);
+  }, [transform, selectedNode, isPlaying, playbackSpeed, traceData]);
 
   // Canvas Mouse & Interaction Handlers
   const getCanvasCoords = useCallback((e) => {
@@ -499,6 +543,14 @@ export default function RealtimeGraphCanvas({
         onMouseLeave={handleMouseUp}
         style={{ cursor: isDraggingCanvasRef.current ? 'grabbing' : 'grab' }}
       />
+
+      {getFocusNodeId(traceData) && (
+        <div className="graph-target-marker">
+          <span className="graph-target-dot" />
+          <span>Target wallet</span>
+          <strong>{getFocusNodeId(traceData)}</strong>
+        </div>
+      )}
 
       {/* Real-Time Floating Controls */}
       <div className="canvas-floating-toolbar">

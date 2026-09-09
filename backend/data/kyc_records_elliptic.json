@@ -1,0 +1,1330 @@
+[
+  {
+    "wallet_address": "1zse6LEoB2KxQDx4",
+    "entity_name": "Vikram Aditya Malhotra (Flagged Mule Node 1)",
+    "entity_type": "MULE_OPERATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Vikram Aditya Malhotra",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-9142",
+    "tax_id": "PAN-AAPPM9102K",
+    "jurisdiction": "New Delhi, India",
+    "physical_address": "H-24, Sector 15, Rohini, New Delhi, 110089",
+    "registered_email": "vikram.523@gmail.com",
+    "registered_phone": "+91 76176 62132",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "HDFC Bank Ltd",
+        "swift_bic": "HDFCINBB",
+        "ifsc": "HDFC0001204",
+        "currency": "INR",
+        "account_number": "46188870098"
+      }
+    ],
+    "associated_ips": [
+      "77.182.160.205",
+      "104.87.205.131",
+      "149.192.182.91"
+    ],
+    "account_creation_date": "2025-07-03T14:00:00Z",
+    "risk_classification": "MULE_RING_OPERATOR"
+  },
+  {
+    "wallet_address": "19ENARnLTF4vPJVH",
+    "entity_name": "Rohit Surendra Verma (Flagged Mule Node 2)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Rohit Surendra Verma",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-4419",
+    "tax_id": "PAN-BKUPV4419M",
+    "jurisdiction": "Mumbai, Maharashtra, India",
+    "physical_address": "Flat 304, Sea Breeze Apt, Andheri West, Mumbai, 400058",
+    "registered_email": "rohit.735@gmail.com",
+    "registered_phone": "+91 82597 92650",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "ICICI Bank Ltd",
+        "swift_bic": "ICICINBB",
+        "ifsc": "ICIC0000014",
+        "currency": "INR",
+        "account_number": "42055767579"
+      }
+    ],
+    "associated_ips": [
+      "162.119.13.145",
+      "99.3.15.45"
+    ],
+    "account_creation_date": "2025-04-03T13:00:00Z",
+    "risk_classification": "MULE_RING_OPERATOR"
+  },
+  {
+    "wallet_address": "1SgBK1FC5nPaCNC3",
+    "entity_name": "Karan Singhania (Flagged Mule Node 3)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Karan Singhania",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-1102",
+    "tax_id": "PAN-AQZPS1102B",
+    "jurisdiction": "Bengaluru, Karnataka, India",
+    "physical_address": "42, 4th Cross, Indiranagar, Bengaluru, 560038",
+    "registered_email": "karan.867@gmail.com",
+    "registered_phone": "+91 76388 91398",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "State Bank of India",
+        "swift_bic": "SBININBB",
+        "ifsc": "SBIN0000812",
+        "currency": "INR",
+        "account_number": "90224674445"
+      }
+    ],
+    "associated_ips": [
+      "181.3.167.146"
+    ],
+    "account_creation_date": "2025-09-14T21:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1ysDNH4ACAAsBQZD",
+    "entity_name": "Priya Nair (Flagged Mule Node 4)",
+    "entity_type": "MULE_OPERATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Priya Nair",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-7733",
+    "tax_id": "PAN-CPNPN7733A",
+    "jurisdiction": "Kochi, Kerala, India",
+    "physical_address": "12A, Marine Drive, Ernakulam, Kochi, 682031",
+    "registered_email": "priya.483@gmail.com",
+    "registered_phone": "+91 83040 83500",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Axis Bank Ltd",
+        "swift_bic": "AXISINBB",
+        "ifsc": "UTIB0000037",
+        "currency": "INR",
+        "account_number": "26676832472"
+      }
+    ],
+    "associated_ips": [
+      "11.206.160.67",
+      "52.108.169.20",
+      "100.48.56.83"
+    ],
+    "account_creation_date": "2025-11-18T21:00:00Z",
+    "risk_classification": "MULE_RING_OPERATOR"
+  },
+  {
+    "wallet_address": "1WvHL67VhRpPce2m",
+    "entity_name": "Deepak Choudhury (Flagged Mule Node 5)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Deepak Choudhury",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-5561",
+    "tax_id": "PAN-DLCPC5561R",
+    "jurisdiction": "Kolkata, West Bengal, India",
+    "physical_address": "22/1, Park Street, Kolkata, 700016",
+    "registered_email": "deepak.944@gmail.com",
+    "registered_phone": "+91 78357 59765",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Punjab National Bank",
+        "swift_bic": "PUNBINBB",
+        "ifsc": "PUNB0024200",
+        "currency": "INR",
+        "account_number": "62344293845"
+      }
+    ],
+    "associated_ips": [
+      "114.6.51.33"
+    ],
+    "account_creation_date": "2025-07-26T14:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1ZYCEGz3mcXuEUkF",
+    "entity_name": "Suresh Kumar Patel (Flagged Mule Node 6)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Suresh Kumar Patel",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-8890",
+    "tax_id": "PAN-FRKPP8890S",
+    "jurisdiction": "Ahmedabad, Gujarat, India",
+    "physical_address": "B-45, Satellite Road, Ahmedabad, 380015",
+    "registered_email": "suresh.171@gmail.com",
+    "registered_phone": "+91 85232 98517",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Bank of Baroda",
+        "swift_bic": "BARBINBB",
+        "ifsc": "BARB0ANDHEW",
+        "currency": "INR",
+        "account_number": "10933946971"
+      }
+    ],
+    "associated_ips": [
+      "190.119.148.197",
+      "194.85.77.194"
+    ],
+    "account_creation_date": "2025-05-21T07:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1oi4rPBFUgazY854",
+    "entity_name": "Anil Rajput (Flagged Mule Node 7)",
+    "entity_type": "MULE_OPERATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Anil Rajput",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-2234",
+    "tax_id": "PAN-GHAPR2234T",
+    "jurisdiction": "Jaipur, Rajasthan, India",
+    "physical_address": "C-12, Malviya Nagar, Jaipur, 302017",
+    "registered_email": "anil.341@gmail.com",
+    "registered_phone": "+91 95245 15035",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "HDFC Bank Ltd",
+        "swift_bic": "HDFCINBB",
+        "ifsc": "HDFC0001204",
+        "currency": "INR",
+        "account_number": "64272236780"
+      }
+    ],
+    "associated_ips": [
+      "67.189.165.84",
+      "141.218.80.120",
+      "33.76.35.51"
+    ],
+    "account_creation_date": "2025-06-16T12:00:00Z",
+    "risk_classification": "MULE_RING_OPERATOR"
+  },
+  {
+    "wallet_address": "1ooHQ9QPxgLWb4yK",
+    "entity_name": "Mohammed Farooq (Flagged Mule Node 8)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Mohammed Farooq",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-6678",
+    "tax_id": "PAN-HJKMF6678U",
+    "jurisdiction": "Hyderabad, Telangana, India",
+    "physical_address": "8-2-120, Banjara Hills, Hyderabad, 500034",
+    "registered_email": "mohammed.429@gmail.com",
+    "registered_phone": "+91 78930 49423",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "ICICI Bank Ltd",
+        "swift_bic": "ICICINBB",
+        "ifsc": "ICIC0000014",
+        "currency": "INR",
+        "account_number": "93365788838"
+      }
+    ],
+    "associated_ips": [
+      "214.143.47.20",
+      "36.118.209.59",
+      "22.237.133.21"
+    ],
+    "account_creation_date": "2025-12-24T01:00:00Z",
+    "risk_classification": "FORWARDING_MULE"
+  },
+  {
+    "wallet_address": "1vtdMonngLCMWLFA",
+    "entity_name": "Rajesh Gupta (Flagged Mule Node 9)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Rajesh Gupta",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-3345",
+    "tax_id": "PAN-IKJRG3345V",
+    "jurisdiction": "Lucknow, Uttar Pradesh, India",
+    "physical_address": "14, Gomti Nagar, Lucknow, 226010",
+    "registered_email": "rajesh.905@gmail.com",
+    "registered_phone": "+91 96484 97909",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "State Bank of India",
+        "swift_bic": "SBININBB",
+        "ifsc": "SBIN0000812",
+        "currency": "INR",
+        "account_number": "66914942367"
+      }
+    ],
+    "associated_ips": [
+      "20.85.97.128",
+      "149.76.172.144",
+      "135.173.242.255"
+    ],
+    "account_creation_date": "2025-02-14T19:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1MoKYzCrCnCt4rmi",
+    "entity_name": "Neha Sharma (Flagged Mule Node 10)",
+    "entity_type": "MULE_OPERATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Neha Sharma",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-9901",
+    "tax_id": "PAN-JLKNS9901W",
+    "jurisdiction": "Pune, Maharashtra, India",
+    "physical_address": "B-12, Green Acres, Baner Road, Pune, 411045",
+    "registered_email": "neha.398@gmail.com",
+    "registered_phone": "+91 99433 50438",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Axis Bank Ltd",
+        "swift_bic": "AXISINBB",
+        "ifsc": "UTIB0000037",
+        "currency": "INR",
+        "account_number": "18575719799"
+      }
+    ],
+    "associated_ips": [
+      "8.2.89.179",
+      "200.122.119.204",
+      "110.82.28.168"
+    ],
+    "account_creation_date": "2025-09-27T17:00:00Z",
+    "risk_classification": "MULE_RING_OPERATOR"
+  },
+  {
+    "wallet_address": "1Md93HRhPXR8xZQA",
+    "entity_name": "Vikram Aditya Malhotra (Flagged Mule Node 11)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Vikram Aditya Malhotra",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-9142",
+    "tax_id": "PAN-AAPPM9102K",
+    "jurisdiction": "New Delhi, India",
+    "physical_address": "H-24, Sector 15, Rohini, New Delhi, 110089",
+    "registered_email": "vikram.988@gmail.com",
+    "registered_phone": "+91 82711 48026",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Punjab National Bank",
+        "swift_bic": "PUNBINBB",
+        "ifsc": "PUNB0024200",
+        "currency": "INR",
+        "account_number": "51888869542"
+      }
+    ],
+    "associated_ips": [
+      "45.146.175.211",
+      "119.144.53.52",
+      "63.207.97.206"
+    ],
+    "account_creation_date": "2025-08-05T12:00:00Z",
+    "risk_classification": "MULE_RING_OPERATOR"
+  },
+  {
+    "wallet_address": "17hvDSTDKisDXmKC",
+    "entity_name": "Rohit Surendra Verma (Flagged Mule Node 12)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Rohit Surendra Verma",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-4419",
+    "tax_id": "PAN-BKUPV4419M",
+    "jurisdiction": "Mumbai, Maharashtra, India",
+    "physical_address": "Flat 304, Sea Breeze Apt, Andheri West, Mumbai, 400058",
+    "registered_email": "rohit.950@gmail.com",
+    "registered_phone": "+91 86352 88775",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Bank of Baroda",
+        "swift_bic": "BARBINBB",
+        "ifsc": "BARB0ANDHEW",
+        "currency": "INR",
+        "account_number": "98880829641"
+      }
+    ],
+    "associated_ips": [
+      "65.69.168.120",
+      "140.145.99.101"
+    ],
+    "account_creation_date": "2025-04-27T01:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1cXx5h8vs6q4ztbD",
+    "entity_name": "Karan Singhania (Flagged Mule Node 13)",
+    "entity_type": "MULE_OPERATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Karan Singhania",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-1102",
+    "tax_id": "PAN-AQZPS1102B",
+    "jurisdiction": "Bengaluru, Karnataka, India",
+    "physical_address": "42, 4th Cross, Indiranagar, Bengaluru, 560038",
+    "registered_email": "karan.281@gmail.com",
+    "registered_phone": "+91 96256 77326",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "HDFC Bank Ltd",
+        "swift_bic": "HDFCINBB",
+        "ifsc": "HDFC0001204",
+        "currency": "INR",
+        "account_number": "57862875708"
+      }
+    ],
+    "associated_ips": [
+      "90.201.24.36"
+    ],
+    "account_creation_date": "2025-04-10T06:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1wSJaBPXC75bq4jp",
+    "entity_name": "Priya Nair (Flagged Mule Node 14)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Priya Nair",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-7733",
+    "tax_id": "PAN-CPNPN7733A",
+    "jurisdiction": "Kochi, Kerala, India",
+    "physical_address": "12A, Marine Drive, Ernakulam, Kochi, 682031",
+    "registered_email": "priya.765@gmail.com",
+    "registered_phone": "+91 81446 94573",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "ICICI Bank Ltd",
+        "swift_bic": "ICICINBB",
+        "ifsc": "ICIC0000014",
+        "currency": "INR",
+        "account_number": "72246072551"
+      }
+    ],
+    "associated_ips": [
+      "154.144.78.150",
+      "36.28.26.156"
+    ],
+    "account_creation_date": "2025-06-15T11:00:00Z",
+    "risk_classification": "MULE_RING_OPERATOR"
+  },
+  {
+    "wallet_address": "1WBeqUqxwCAq9Uwo",
+    "entity_name": "Deepak Choudhury (Flagged Mule Node 15)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Deepak Choudhury",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-5561",
+    "tax_id": "PAN-DLCPC5561R",
+    "jurisdiction": "Kolkata, West Bengal, India",
+    "physical_address": "22/1, Park Street, Kolkata, 700016",
+    "registered_email": "deepak.189@gmail.com",
+    "registered_phone": "+91 90043 56750",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "State Bank of India",
+        "swift_bic": "SBININBB",
+        "ifsc": "SBIN0000812",
+        "currency": "INR",
+        "account_number": "49234928592"
+      }
+    ],
+    "associated_ips": [
+      "8.180.48.166",
+      "126.52.241.116",
+      "167.129.45.93"
+    ],
+    "account_creation_date": "2025-04-05T15:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1M59JAfGEaxXy344",
+    "entity_name": "Suresh Kumar Patel (Flagged Mule Node 16)",
+    "entity_type": "MULE_OPERATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Suresh Kumar Patel",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-8890",
+    "tax_id": "PAN-FRKPP8890S",
+    "jurisdiction": "Ahmedabad, Gujarat, India",
+    "physical_address": "B-45, Satellite Road, Ahmedabad, 380015",
+    "registered_email": "suresh.280@gmail.com",
+    "registered_phone": "+91 89460 29637",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Axis Bank Ltd",
+        "swift_bic": "AXISINBB",
+        "ifsc": "UTIB0000037",
+        "currency": "INR",
+        "account_number": "32722720498"
+      }
+    ],
+    "associated_ips": [
+      "202.94.182.152",
+      "4.4.246.54"
+    ],
+    "account_creation_date": "2025-05-16T07:00:00Z",
+    "risk_classification": "FORWARDING_MULE"
+  },
+  {
+    "wallet_address": "1piv4LTXoueAARJY",
+    "entity_name": "Anil Rajput (Flagged Mule Node 17)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Anil Rajput",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-2234",
+    "tax_id": "PAN-GHAPR2234T",
+    "jurisdiction": "Jaipur, Rajasthan, India",
+    "physical_address": "C-12, Malviya Nagar, Jaipur, 302017",
+    "registered_email": "anil.955@gmail.com",
+    "registered_phone": "+91 80318 88449",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Punjab National Bank",
+        "swift_bic": "PUNBINBB",
+        "ifsc": "PUNB0024200",
+        "currency": "INR",
+        "account_number": "94253753660"
+      }
+    ],
+    "associated_ips": [
+      "81.131.13.177"
+    ],
+    "account_creation_date": "2025-01-09T13:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "13ScvgbDy3vhBYap",
+    "entity_name": "Mohammed Farooq (Flagged Mule Node 18)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Mohammed Farooq",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-6678",
+    "tax_id": "PAN-HJKMF6678U",
+    "jurisdiction": "Hyderabad, Telangana, India",
+    "physical_address": "8-2-120, Banjara Hills, Hyderabad, 500034",
+    "registered_email": "mohammed.627@gmail.com",
+    "registered_phone": "+91 85369 87740",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Bank of Baroda",
+        "swift_bic": "BARBINBB",
+        "ifsc": "BARB0ANDHEW",
+        "currency": "INR",
+        "account_number": "26642680663"
+      }
+    ],
+    "associated_ips": [
+      "144.23.53.167",
+      "27.246.78.108",
+      "14.207.59.101"
+    ],
+    "account_creation_date": "2025-07-27T08:00:00Z",
+    "risk_classification": "FORWARDING_MULE"
+  },
+  {
+    "wallet_address": "1ceWLubskVDrfKnA",
+    "entity_name": "Rajesh Gupta (Flagged Mule Node 19)",
+    "entity_type": "MULE_OPERATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Rajesh Gupta",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-3345",
+    "tax_id": "PAN-IKJRG3345V",
+    "jurisdiction": "Lucknow, Uttar Pradesh, India",
+    "physical_address": "14, Gomti Nagar, Lucknow, 226010",
+    "registered_email": "rajesh.509@gmail.com",
+    "registered_phone": "+91 72543 35641",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "HDFC Bank Ltd",
+        "swift_bic": "HDFCINBB",
+        "ifsc": "HDFC0001204",
+        "currency": "INR",
+        "account_number": "95116497199"
+      }
+    ],
+    "associated_ips": [
+      "18.246.255.125",
+      "166.188.218.109"
+    ],
+    "account_creation_date": "2025-11-19T16:00:00Z",
+    "risk_classification": "FORWARDING_MULE"
+  },
+  {
+    "wallet_address": "1qgSNtPJj7QqZ9z3",
+    "entity_name": "Neha Sharma (Flagged Mule Node 20)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Neha Sharma",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-9901",
+    "tax_id": "PAN-JLKNS9901W",
+    "jurisdiction": "Pune, Maharashtra, India",
+    "physical_address": "B-12, Green Acres, Baner Road, Pune, 411045",
+    "registered_email": "neha.132@gmail.com",
+    "registered_phone": "+91 87501 27383",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "ICICI Bank Ltd",
+        "swift_bic": "ICICINBB",
+        "ifsc": "ICIC0000014",
+        "currency": "INR",
+        "account_number": "64930928719"
+      }
+    ],
+    "associated_ips": [
+      "130.98.190.18"
+    ],
+    "account_creation_date": "2025-07-23T09:00:00Z",
+    "risk_classification": "MULE_RING_OPERATOR"
+  },
+  {
+    "wallet_address": "1AX8JsBV438TmwYJ",
+    "entity_name": "Vikram Aditya Malhotra (Flagged Mule Node 21)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Vikram Aditya Malhotra",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-9142",
+    "tax_id": "PAN-AAPPM9102K",
+    "jurisdiction": "New Delhi, India",
+    "physical_address": "H-24, Sector 15, Rohini, New Delhi, 110089",
+    "registered_email": "vikram.693@gmail.com",
+    "registered_phone": "+91 88189 62496",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "State Bank of India",
+        "swift_bic": "SBININBB",
+        "ifsc": "SBIN0000812",
+        "currency": "INR",
+        "account_number": "88911407418"
+      }
+    ],
+    "associated_ips": [
+      "195.46.6.218"
+    ],
+    "account_creation_date": "2025-11-08T01:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1BNhWegfsi9vfMdQ",
+    "entity_name": "Rohit Surendra Verma (Flagged Mule Node 22)",
+    "entity_type": "MULE_OPERATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Rohit Surendra Verma",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-4419",
+    "tax_id": "PAN-BKUPV4419M",
+    "jurisdiction": "Mumbai, Maharashtra, India",
+    "physical_address": "Flat 304, Sea Breeze Apt, Andheri West, Mumbai, 400058",
+    "registered_email": "rohit.985@gmail.com",
+    "registered_phone": "+91 85244 58893",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Axis Bank Ltd",
+        "swift_bic": "AXISINBB",
+        "ifsc": "UTIB0000037",
+        "currency": "INR",
+        "account_number": "73501457523"
+      }
+    ],
+    "associated_ips": [
+      "56.249.146.222",
+      "113.65.110.23"
+    ],
+    "account_creation_date": "2025-10-17T22:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1BuSpKqu8ph5sQWC",
+    "entity_name": "Karan Singhania (Flagged Mule Node 23)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Karan Singhania",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-1102",
+    "tax_id": "PAN-AQZPS1102B",
+    "jurisdiction": "Bengaluru, Karnataka, India",
+    "physical_address": "42, 4th Cross, Indiranagar, Bengaluru, 560038",
+    "registered_email": "karan.274@gmail.com",
+    "registered_phone": "+91 98626 84831",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Punjab National Bank",
+        "swift_bic": "PUNBINBB",
+        "ifsc": "PUNB0024200",
+        "currency": "INR",
+        "account_number": "10189109066"
+      }
+    ],
+    "associated_ips": [
+      "50.171.10.188",
+      "124.221.43.213",
+      "109.148.137.206"
+    ],
+    "account_creation_date": "2025-10-19T07:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1jree3scyUDWLe9P",
+    "entity_name": "Priya Nair (Flagged Mule Node 24)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Priya Nair",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-7733",
+    "tax_id": "PAN-CPNPN7733A",
+    "jurisdiction": "Kochi, Kerala, India",
+    "physical_address": "12A, Marine Drive, Ernakulam, Kochi, 682031",
+    "registered_email": "priya.223@gmail.com",
+    "registered_phone": "+91 80587 98199",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Bank of Baroda",
+        "swift_bic": "BARBINBB",
+        "ifsc": "BARB0ANDHEW",
+        "currency": "INR",
+        "account_number": "23772462104"
+      }
+    ],
+    "associated_ips": [
+      "75.171.104.222"
+    ],
+    "account_creation_date": "2025-08-24T07:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1F1GgPJ4vyFDpzpB",
+    "entity_name": "Deepak Choudhury (Flagged Mule Node 25)",
+    "entity_type": "MULE_OPERATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Deepak Choudhury",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-5561",
+    "tax_id": "PAN-DLCPC5561R",
+    "jurisdiction": "Kolkata, West Bengal, India",
+    "physical_address": "22/1, Park Street, Kolkata, 700016",
+    "registered_email": "deepak.313@gmail.com",
+    "registered_phone": "+91 90746 39461",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "HDFC Bank Ltd",
+        "swift_bic": "HDFCINBB",
+        "ifsc": "HDFC0001204",
+        "currency": "INR",
+        "account_number": "98482557987"
+      }
+    ],
+    "associated_ips": [
+      "32.168.208.85"
+    ],
+    "account_creation_date": "2025-02-13T02:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "182wUJkB4EoR4wir",
+    "entity_name": "Suresh Kumar Patel (Flagged Mule Node 26)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Suresh Kumar Patel",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-8890",
+    "tax_id": "PAN-FRKPP8890S",
+    "jurisdiction": "Ahmedabad, Gujarat, India",
+    "physical_address": "B-45, Satellite Road, Ahmedabad, 380015",
+    "registered_email": "suresh.968@gmail.com",
+    "registered_phone": "+91 79943 80392",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "ICICI Bank Ltd",
+        "swift_bic": "ICICINBB",
+        "ifsc": "ICIC0000014",
+        "currency": "INR",
+        "account_number": "20190406786"
+      }
+    ],
+    "associated_ips": [
+      "105.171.98.88"
+    ],
+    "account_creation_date": "2025-04-23T12:00:00Z",
+    "risk_classification": "FORWARDING_MULE"
+  },
+  {
+    "wallet_address": "1vtUTgUc5yJLwDWz",
+    "entity_name": "Anil Rajput (Flagged Mule Node 27)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Anil Rajput",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-2234",
+    "tax_id": "PAN-GHAPR2234T",
+    "jurisdiction": "Jaipur, Rajasthan, India",
+    "physical_address": "C-12, Malviya Nagar, Jaipur, 302017",
+    "registered_email": "anil.730@gmail.com",
+    "registered_phone": "+91 88542 61326",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "State Bank of India",
+        "swift_bic": "SBININBB",
+        "ifsc": "SBIN0000812",
+        "currency": "INR",
+        "account_number": "76047263908"
+      }
+    ],
+    "associated_ips": [
+      "209.62.63.68",
+      "124.63.2.208",
+      "57.121.134.29"
+    ],
+    "account_creation_date": "2025-12-14T08:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1PHBfB9ASUr9BcMR",
+    "entity_name": "Mohammed Farooq (Flagged Mule Node 28)",
+    "entity_type": "MULE_OPERATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Mohammed Farooq",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-6678",
+    "tax_id": "PAN-HJKMF6678U",
+    "jurisdiction": "Hyderabad, Telangana, India",
+    "physical_address": "8-2-120, Banjara Hills, Hyderabad, 500034",
+    "registered_email": "mohammed.116@gmail.com",
+    "registered_phone": "+91 85500 99567",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Axis Bank Ltd",
+        "swift_bic": "AXISINBB",
+        "ifsc": "UTIB0000037",
+        "currency": "INR",
+        "account_number": "80837122504"
+      }
+    ],
+    "associated_ips": [
+      "134.201.130.183"
+    ],
+    "account_creation_date": "2025-01-10T03:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1ikwsNu1RENPsNyY",
+    "entity_name": "Rajesh Gupta (Flagged Mule Node 29)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Rajesh Gupta",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-3345",
+    "tax_id": "PAN-IKJRG3345V",
+    "jurisdiction": "Lucknow, Uttar Pradesh, India",
+    "physical_address": "14, Gomti Nagar, Lucknow, 226010",
+    "registered_email": "rajesh.462@gmail.com",
+    "registered_phone": "+91 74006 48013",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Punjab National Bank",
+        "swift_bic": "PUNBINBB",
+        "ifsc": "PUNB0024200",
+        "currency": "INR",
+        "account_number": "56773712401"
+      }
+    ],
+    "associated_ips": [
+      "20.16.220.89",
+      "35.240.236.162",
+      "9.33.121.97"
+    ],
+    "account_creation_date": "2025-09-04T17:00:00Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "1B3n1XSnNTEBrhiG",
+    "entity_name": "Neha Sharma (Flagged Mule Node 30)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Neha Sharma",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-9901",
+    "tax_id": "PAN-JLKNS9901W",
+    "jurisdiction": "Pune, Maharashtra, India",
+    "physical_address": "B-12, Green Acres, Baner Road, Pune, 411045",
+    "registered_email": "neha.498@gmail.com",
+    "registered_phone": "+91 77423 88633",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Bank of Baroda",
+        "swift_bic": "BARBINBB",
+        "ifsc": "BARB0ANDHEW",
+        "currency": "INR",
+        "account_number": "99829137071"
+      }
+    ],
+    "associated_ips": [
+      "18.77.6.196",
+      "56.189.40.195"
+    ],
+    "account_creation_date": "2025-12-12T22:00:00Z",
+    "risk_classification": "MULE_RING_OPERATOR"
+  },
+  {
+    "wallet_address": "3wyLJFqFLkmqeTeH",
+    "entity_name": "CryptoGlobal Exchange Services Ltd (Hot Wallet 01)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "SHELL_JURISDICTION",
+    "primary_beneficiary": "Mikhail A. Volkov / CryptoGlobal Exchange Services Ltd",
+    "national_id": "PASSPORT-RUS-78192044",
+    "tax_id": "TAX-SEY-990141",
+    "jurisdiction": "Victoria, Mahé, Seychelles",
+    "physical_address": "Suite 402, Eden Plaza, Eden Island, Mahe, Seychelles",
+    "registered_email": "compliance@cryptoglobal-exchang.io",
+    "registered_phone": "+852 4785 7259",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Offshore Merchant Bank of Vanuatu",
+        "swift_bic": "OMBVVUVU",
+        "currency": "USD",
+        "account_number": "HK80-5904-8976"
+      }
+    ],
+    "associated_ips": [
+      "18.255.130.130",
+      "86.56.202.54"
+    ],
+    "account_creation_date": "2024-11-05T21:00:00Z",
+    "risk_classification": "CRITICAL_OFFRAMP_SUSPECT"
+  },
+  {
+    "wallet_address": "3bBqbQivvMVbDbZj",
+    "entity_name": "OffshoreX Trading Terminal BVI (Hot Wallet 02)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "SHELL_JURISDICTION",
+    "primary_beneficiary": "Chen Wei / OffshoreX Trading Terminal BVI",
+    "national_id": "PASSPORT-HKG-E8819204",
+    "tax_id": "HK-BRN-6601928",
+    "jurisdiction": "Hong Kong SAR / Belize",
+    "physical_address": "Room 1804, Hollywood Commercial Center, Mong Kok, Hong Kong",
+    "registered_email": "compliance@offshorex-trading-te.io",
+    "registered_phone": "+1 1767 3348",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "East Asia Merchant Bank Ltd",
+        "swift_bic": "EAMBHKHH",
+        "currency": "USD",
+        "account_number": "BZ88-2262-6797"
+      }
+    ],
+    "associated_ips": [
+      "104.143.149.114",
+      "114.164.230.25"
+    ],
+    "account_creation_date": "2024-08-23T01:00:00Z",
+    "risk_classification": "CRITICAL_OFFRAMP_SUSPECT"
+  },
+  {
+    "wallet_address": "33YWCjBomCEfoFyz",
+    "entity_name": "Pacific Digital Assets Exchange (Hot Wallet 03)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "UNCOOPERATIVE_OFFSHORE",
+    "primary_beneficiary": "Marcus Sterling / Pacific Digital Assets Exchange",
+    "national_id": "PASSPORT-GBR-55419028",
+    "tax_id": "BVI-CO-88192",
+    "jurisdiction": "Road Town, Tortola, BVI",
+    "physical_address": "Wickhams Cay 1, P.O. Box 3140, Road Town, Tortola, BVI",
+    "registered_email": "compliance@pacific-digital-asse.io",
+    "registered_phone": "+971 4651 3527",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "BVI Commercial Bank",
+        "swift_bic": "BVICVGAA",
+        "currency": "USD",
+        "account_number": "SG70-6650-2901"
+      }
+    ],
+    "associated_ips": [
+      "101.56.172.131",
+      "44.151.112.164"
+    ],
+    "account_creation_date": "2024-01-08T03:00:00Z",
+    "risk_classification": "AUTOMATION_COORDINATOR"
+  },
+  {
+    "wallet_address": "3fEw71S93wM8AFCq",
+    "entity_name": "Meridian Crypto Holdings (Hot Wallet 04)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "SHELL_JURISDICTION",
+    "primary_beneficiary": "Sergey Bogdanov / Meridian Crypto Holdings",
+    "national_id": "PASSPORT-RUS-45091823",
+    "tax_id": "INN-7704192081",
+    "jurisdiction": "Almaty, Kazakhstan",
+    "physical_address": "Dostyk Ave 105, Almaty 050051, Kazakhstan",
+    "registered_email": "compliance@meridian-crypto-hold.io",
+    "registered_phone": "+971 1085 6744",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Kaspi Bank JSC",
+        "swift_bic": "CASPKZKA",
+        "currency": "KZT",
+        "account_number": "VG30-6898-7751"
+      }
+    ],
+    "associated_ips": [
+      "49.237.37.105",
+      "219.197.39.126"
+    ],
+    "account_creation_date": "2024-09-01T20:00:00Z",
+    "risk_classification": "AUTOMATION_COORDINATOR"
+  },
+  {
+    "wallet_address": "3M239b5DEVh1NKFV",
+    "entity_name": "SilkRoute Exchange DMCC (Hot Wallet 05)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "SHELL_JURISDICTION",
+    "primary_beneficiary": "Andrei Petrov / SilkRoute Exchange DMCC",
+    "national_id": "PASSPORT-RUS-62810933",
+    "tax_id": "INN-7709441022",
+    "jurisdiction": "Moscow, Russia",
+    "physical_address": "Ul. Tverskaya 15, Moscow, 125009, Russia",
+    "registered_email": "compliance@silkroute-exchange-d.io",
+    "registered_phone": "+971 9581 4809",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Dubai Islamic Bank",
+        "swift_bic": "DUIBAEADXXX",
+        "currency": "AED",
+        "account_number": "SG35-4490-1368"
+      }
+    ],
+    "associated_ips": [
+      "80.255.32.62",
+      "151.116.31.229"
+    ],
+    "account_creation_date": "2024-08-01T20:00:00Z",
+    "risk_classification": "OFFRAMP_HOST"
+  },
+  {
+    "wallet_address": "3Cy58imRd5rntwwS",
+    "entity_name": "CoinNest International Ltd (Hot Wallet 06)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "UNCOOPERATIVE_OFFSHORE",
+    "primary_beneficiary": "Li Jun / CoinNest International Ltd",
+    "national_id": "PASSPORT-CHN-G4429100",
+    "tax_id": "CN-TAX-310101992",
+    "jurisdiction": "Shanghai, China",
+    "physical_address": "Pudong New Area, Lujiazui, Shanghai, 200120",
+    "registered_email": "compliance@coinnest-internation.io",
+    "registered_phone": "+852 1032 3461",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Offshore Merchant Bank of Vanuatu",
+        "swift_bic": "OMBVVUVU",
+        "currency": "USD",
+        "account_number": "HK75-3832-6195"
+      }
+    ],
+    "associated_ips": [
+      "76.151.151.174",
+      "83.148.236.68"
+    ],
+    "account_creation_date": "2024-11-03T05:00:00Z",
+    "risk_classification": "AUTOMATION_COORDINATOR"
+  },
+  {
+    "wallet_address": "3yPiVMh5dp8KPR9t",
+    "entity_name": "Phoenix Trading Terminal (Hot Wallet 07)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "FLAGGED_HIGH_RISK",
+    "primary_beneficiary": "Omar Al-Rashid / Phoenix Trading Terminal",
+    "national_id": "PASSPORT-UAE-A9921001",
+    "tax_id": "UAE-TRN-100199288",
+    "jurisdiction": "Dubai, UAE",
+    "physical_address": "Business Bay, Dubai, UAE",
+    "registered_email": "compliance@phoenix-trading-term.io",
+    "registered_phone": "+852 5312 1429",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "East Asia Merchant Bank Ltd",
+        "swift_bic": "EAMBHKHH",
+        "currency": "USD",
+        "account_number": "VG80-6990-6430"
+      }
+    ],
+    "associated_ips": [
+      "106.121.79.196",
+      "36.215.68.247"
+    ],
+    "account_creation_date": "2024-07-05T13:00:00Z",
+    "risk_classification": "CRITICAL_OFFRAMP_SUSPECT"
+  },
+  {
+    "wallet_address": "31nV2DrVWAFeyqYT",
+    "entity_name": "Atlas Digital Exchange (Hot Wallet 08)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "FLAGGED_HIGH_RISK",
+    "primary_beneficiary": "James O'Brien / Atlas Digital Exchange",
+    "national_id": "PASSPORT-IRL-PP9912044",
+    "tax_id": "IE-TIN-8812901S",
+    "jurisdiction": "Dublin, Ireland",
+    "physical_address": "14 Fitzwilliam Square, Dublin 2, Ireland",
+    "registered_email": "compliance@atlas-digital-exchan.io",
+    "registered_phone": "+65 7734 4013",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "BVI Commercial Bank",
+        "swift_bic": "BVICVGAA",
+        "currency": "USD",
+        "account_number": "KY44-1910-8665"
+      }
+    ],
+    "associated_ips": [
+      "153.6.115.119",
+      "166.249.51.225"
+    ],
+    "account_creation_date": "2024-02-19T08:00:00Z",
+    "risk_classification": "OFFRAMP_HOST"
+  },
+  {
+    "wallet_address": "31A6EQ7oSqhieQBM",
+    "entity_name": "Vertex Crypto OTC Desk (Hot Wallet 09)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "FLAGGED_HIGH_RISK",
+    "primary_beneficiary": "Mikhail A. Volkov / Vertex Crypto OTC Desk",
+    "national_id": "PASSPORT-RUS-78192044",
+    "tax_id": "TAX-SEY-990141",
+    "jurisdiction": "Victoria, Mahé, Seychelles",
+    "physical_address": "Suite 402, Eden Plaza, Eden Island, Mahe, Seychelles",
+    "registered_email": "compliance@vertex-crypto-otc-de.io",
+    "registered_phone": "+971 6636 7180",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Kaspi Bank JSC",
+        "swift_bic": "CASPKZKA",
+        "currency": "KZT",
+        "account_number": "BZ81-1863-8898"
+      }
+    ],
+    "associated_ips": [
+      "16.16.232.14",
+      "193.5.117.160"
+    ],
+    "account_creation_date": "2024-10-07T17:00:00Z",
+    "risk_classification": "AUTOMATION_COORDINATOR"
+  },
+  {
+    "wallet_address": "31u2kj2PUBoHKUe6",
+    "entity_name": "NovaPay Exchange Services (Hot Wallet 10)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "UNCOOPERATIVE_OFFSHORE",
+    "primary_beneficiary": "Chen Wei / NovaPay Exchange Services",
+    "national_id": "PASSPORT-HKG-E8819204",
+    "tax_id": "HK-BRN-6601928",
+    "jurisdiction": "Hong Kong SAR / Belize",
+    "physical_address": "Room 1804, Hollywood Commercial Center, Mong Kok, Hong Kong",
+    "registered_email": "compliance@novapay-exchange-ser.io",
+    "registered_phone": "+65 3030 3597",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Dubai Islamic Bank",
+        "swift_bic": "DUIBAEADXXX",
+        "currency": "AED",
+        "account_number": "BZ80-2623-6648"
+      }
+    ],
+    "associated_ips": [
+      "61.13.30.96",
+      "39.143.101.64"
+    ],
+    "account_creation_date": "2024-03-09T22:00:00Z",
+    "risk_classification": "AUTOMATION_COORDINATOR"
+  },
+  {
+    "wallet_address": "3TwobS8w1RnXNQzC",
+    "entity_name": "Eclipse Trading Platform (Hot Wallet 11)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "UNCOOPERATIVE_OFFSHORE",
+    "primary_beneficiary": "Marcus Sterling / Eclipse Trading Platform",
+    "national_id": "PASSPORT-GBR-55419028",
+    "tax_id": "BVI-CO-88192",
+    "jurisdiction": "Road Town, Tortola, BVI",
+    "physical_address": "Wickhams Cay 1, P.O. Box 3140, Road Town, Tortola, BVI",
+    "registered_email": "compliance@eclipse-trading-plat.io",
+    "registered_phone": "+65 9443 1984",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Offshore Merchant Bank of Vanuatu",
+        "swift_bic": "OMBVVUVU",
+        "currency": "USD",
+        "account_number": "KY50-3353-9815"
+      }
+    ],
+    "associated_ips": [
+      "5.82.84.222",
+      "62.176.174.94"
+    ],
+    "account_creation_date": "2024-05-26T08:00:00Z",
+    "risk_classification": "CRITICAL_OFFRAMP_SUSPECT"
+  },
+  {
+    "wallet_address": "3JNGSpTz4CW5hTzG",
+    "entity_name": "Orion Crypto Exchange Ltd (Hot Wallet 12)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "FLAGGED_HIGH_RISK",
+    "primary_beneficiary": "Sergey Bogdanov / Orion Crypto Exchange Ltd",
+    "national_id": "PASSPORT-RUS-45091823",
+    "tax_id": "INN-7704192081",
+    "jurisdiction": "Almaty, Kazakhstan",
+    "physical_address": "Dostyk Ave 105, Almaty 050051, Kazakhstan",
+    "registered_email": "compliance@orion-crypto-exchang.io",
+    "registered_phone": "+1 9084 2809",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "East Asia Merchant Bank Ltd",
+        "swift_bic": "EAMBHKHH",
+        "currency": "USD",
+        "account_number": "BZ94-7572-8859"
+      }
+    ],
+    "associated_ips": [
+      "145.190.108.82",
+      "162.25.16.239"
+    ],
+    "account_creation_date": "2024-09-16T13:00:00Z",
+    "risk_classification": "AUTOMATION_COORDINATOR"
+  },
+  {
+    "wallet_address": "3Y8vT7ASAd4qeB7t",
+    "entity_name": "Delta OTC Trading Corp (Hot Wallet 13)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "FLAGGED_HIGH_RISK",
+    "primary_beneficiary": "Andrei Petrov / Delta OTC Trading Corp",
+    "national_id": "PASSPORT-RUS-62810933",
+    "tax_id": "INN-7709441022",
+    "jurisdiction": "Moscow, Russia",
+    "physical_address": "Ul. Tverskaya 15, Moscow, 125009, Russia",
+    "registered_email": "compliance@delta-otc-trading-co.io",
+    "registered_phone": "+65 2274 4559",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "BVI Commercial Bank",
+        "swift_bic": "BVICVGAA",
+        "currency": "USD",
+        "account_number": "SG36-3103-3502"
+      }
+    ],
+    "associated_ips": [
+      "82.255.25.86",
+      "160.235.43.189"
+    ],
+    "account_creation_date": "2024-05-25T03:00:00Z",
+    "risk_classification": "OFFRAMP_HOST"
+  },
+  {
+    "wallet_address": "3bT1sZ43sAMEmTAs",
+    "entity_name": "Zenith Digital Markets (Hot Wallet 14)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "SHELL_JURISDICTION",
+    "primary_beneficiary": "Li Jun / Zenith Digital Markets",
+    "national_id": "PASSPORT-CHN-G4429100",
+    "tax_id": "CN-TAX-310101992",
+    "jurisdiction": "Shanghai, China",
+    "physical_address": "Pudong New Area, Lujiazui, Shanghai, 200120",
+    "registered_email": "compliance@zenith-digital-marke.io",
+    "registered_phone": "+852 7945 4807",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Kaspi Bank JSC",
+        "swift_bic": "CASPKZKA",
+        "currency": "KZT",
+        "account_number": "VG47-7871-9300"
+      }
+    ],
+    "associated_ips": [
+      "156.189.76.45",
+      "155.208.166.200"
+    ],
+    "account_creation_date": "2024-01-02T10:00:00Z",
+    "risk_classification": "CRITICAL_OFFRAMP_SUSPECT"
+  },
+  {
+    "wallet_address": "3AZSyahATYfVAd1i",
+    "entity_name": "Quantum Exchange BVI (Hot Wallet 15)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "UNCOOPERATIVE_OFFSHORE",
+    "primary_beneficiary": "Omar Al-Rashid / Quantum Exchange BVI",
+    "national_id": "PASSPORT-UAE-A9921001",
+    "tax_id": "UAE-TRN-100199288",
+    "jurisdiction": "Dubai, UAE",
+    "physical_address": "Business Bay, Dubai, UAE",
+    "registered_email": "compliance@quantum-exchange-bvi.io",
+    "registered_phone": "+852 2736 9318",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Dubai Islamic Bank",
+        "swift_bic": "DUIBAEADXXX",
+        "currency": "AED",
+        "account_number": "VG57-3337-8026"
+      }
+    ],
+    "associated_ips": [
+      "63.148.74.152",
+      "95.114.91.99"
+    ],
+    "account_creation_date": "2024-02-04T10:00:00Z",
+    "risk_classification": "OFFRAMP_HOST"
+  },
+  {
+    "wallet_address": "1dBnZM2ZKr3V44Li",
+    "entity_name": "Ananya Sharma (Verified Retail Trader)",
+    "entity_type": "LICIT_RETAIL_USER",
+    "kyc_status": "TIER_2_VERIFIED",
+    "primary_beneficiary": "Ananya Sharma",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-5501",
+    "tax_id": "PAN-BKKPS5501A",
+    "jurisdiction": "Pune, Maharashtra, India",
+    "physical_address": "B-12, Green Acres, Baner Road, Pune, 411045",
+    "registered_email": "ananya.verified@gmail.com",
+    "registered_phone": "+91 84012 68869",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "HDFC Bank Ltd",
+        "swift_bic": "HDFCINBB",
+        "ifsc": "HDFC0001204",
+        "currency": "INR",
+        "account_number": "19096700777"
+      }
+    ],
+    "associated_ips": [
+      "14.139.240.197"
+    ],
+    "account_creation_date": "2023-12-10T12:00:00Z",
+    "risk_classification": "LEGITIMATE_USER"
+  },
+  {
+    "wallet_address": "15NBVGLtZxFXPYNJ",
+    "entity_name": "Ravi Krishnamurthy (Verified Retail Trader)",
+    "entity_type": "LICIT_RETAIL_USER",
+    "kyc_status": "TIER_2_VERIFIED",
+    "primary_beneficiary": "Ravi Krishnamurthy",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-6612",
+    "tax_id": "PAN-CLKRK6612B",
+    "jurisdiction": "Chennai, Tamil Nadu, India",
+    "physical_address": "15, Anna Salai, T. Nagar, Chennai, 600017",
+    "registered_email": "ravi.verified@gmail.com",
+    "registered_phone": "+91 86658 63295",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "ICICI Bank Ltd",
+        "swift_bic": "ICICINBB",
+        "ifsc": "ICIC0000014",
+        "currency": "INR",
+        "account_number": "95191602311"
+      }
+    ],
+    "associated_ips": [
+      "14.139.166.162"
+    ],
+    "account_creation_date": "2023-09-15T12:00:00Z",
+    "risk_classification": "LEGITIMATE_USER"
+  },
+  {
+    "wallet_address": "1QEE1bTY9qBWgRVh",
+    "entity_name": "Sunita Desai (Verified Retail Trader)",
+    "entity_type": "LICIT_RETAIL_USER",
+    "kyc_status": "TIER_2_VERIFIED",
+    "primary_beneficiary": "Sunita Desai",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-7723",
+    "tax_id": "PAN-DMKSD7723C",
+    "jurisdiction": "Bangalore, Karnataka, India",
+    "physical_address": "23, MG Road, Bangalore, 560001",
+    "registered_email": "sunita.verified@gmail.com",
+    "registered_phone": "+91 86975 53566",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "State Bank of India",
+        "swift_bic": "SBININBB",
+        "ifsc": "SBIN0000812",
+        "currency": "INR",
+        "account_number": "77556048104"
+      }
+    ],
+    "associated_ips": [
+      "14.139.18.166"
+    ],
+    "account_creation_date": "2023-10-21T12:00:00Z",
+    "risk_classification": "LEGITIMATE_USER"
+  }
+]

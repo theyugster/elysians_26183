@@ -1,203 +1,263 @@
 # ChainTrace-I4C: Graph ML Fraud Detection & Culprit KYC Intelligence Engine
 
 > **Smart India Hackathon (SIH 2026)**  
-> **Problem Statement:** Automated Real-Time Identification of Fraud-Linked Cryptocurrency Exchanges via Graph Machine Learning & Automated Blockchain Analytics.  
-> **Legal Mandate:** Bharatiya Nagarik Suraksha Sanhita (BNSS) Section 94 Digital Evidence Order Architecture.
+> **Dataset:** Elliptic++ Bitcoin Blockchain Transaction Dataset (5,000 transactions, 183 features)  
+> **Model:** Random Forest Ensemble + Graph Topological Features (PageRank, HITS, Degree Centrality)  
+> **Legal Framework:** BNSS Section 94 Digital Evidence Order Architecture
 
 ---
 
 ## 1. System Architecture Overview
 
-ChainTrace-I4C is an advanced, production-ready cryptocurrency forensic intelligence platform that trains on and evaluates real-world blockchain transaction datasets using a **Graph Machine Learning Engine**. It scores **every individual transaction** against topological and flow-anomaly features, detects fraudulent culprit wallets (mules, consolidators, sybil sponsors, and cash-out off-ramps), and automatically performs **KYC Unmasking** to link on-chain culprit wallets to real-world identities, national IDs, and bank accounts.
+ChainTrace-I4C is an advanced cryptocurrency forensic intelligence platform that loads and evaluates the **Elliptic++ dataset** — a real-world Bitcoin blockchain transaction graph — using a **Graph Machine Learning Engine**. It scores every transaction using a Random Forest classifier trained on 183 Elliptic features plus 8 graph-topological features, detects fraudulent wallets, and performs **KYC Unmasking** to link on-chain culprit wallets to real-world identities.
 
 ```
-                    ┌────────────────────────────────────────────────────────┐
-                    │       ChainTrace Graph ML Fraud Detection Platform     │
-                    └─────────────────────────┬──────────────────────────────┘
-                                              │
-       ┌──────────────────────────────────────┼──────────────────────────────────────┐
-       ▼                                      ▼                                      ▼
-[Graph ML Scoring Engine]          [Culprit Identification]             [KYC Unmasking Engine]
- • NetworkX Directed Multigraph     • Culprit Mules & Consolidators      • Direct KYC Registry Match
- • PageRank & Centrality            • Sybil Gas Sponsors                 • Downstream Off-Ramp Tracing
- • Flow Velocity & Forward Ratio    • Terminal Offshore VASPs            • Aadhaar, Passport & PAN
- • Every-Transaction Prob. (0-100)  • Anomaly Threat Profiling           • Linked Bank Accounts & IFSC
+┌──────────────────────────────────────────────────────────────────┐
+│                    ChainTrace-I4C Architecture                    │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                    │
+│  ┌─────────────────┐    ┌─────────────────────────────────────┐  │
+│  │  Elliptic++      │    │  Graph ML Engine                     │  │
+│  │  Dataset         │───>│  • Random Forest Classifier          │  │
+│  │  (3 CSV files)   │    │  • PageRank / HITS / Centrality      │  │
+│  │  + Wallet Map    │    │  • 183 + 8 features per transaction  │  │
+│  │  + KYC Records   │    │  • Fraud probability scoring         │  │
+│  └─────────────────┘    └──────────────┬──────────────────────┘  │
+│                                          │                         │
+│  ┌─────────────────┐    ┌──────────────┴──────────────────────┐  │
+│  │  FastAPI Backend │<───│  Scored Transactions & Culprits      │  │
+│  │  (REST API)      │    │  • 5,000 txs scored                  │  │
+│  │                  │    │  • ~71 culprit wallets flagged        │  │
+│  └────────┬────────┘    │  • KYC resolution for each            │  │
+│           │              └─────────────────────────────────────┘  │
+│  ┌────────┴────────┐                                              │
+│  │  React Frontend  │                                              │
+│  │  (Vite + Canvas) │                                              │
+│  │  • Graph Canvas   │                                              │
+│  │  • KYC Panel      │                                              │
+│  │  • Tx Feed        │                                              │
+│  └─────────────────┘                                              │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 2. Valid Dataset & Storage
+## 2. Dataset: Elliptic++ Format
 
-The system operates on realistic, structured datasets stored under [`backend/data/`](file:///c:/Users/yugen/Desktop/boowomp/backend/data/):
+### What is Elliptic++?
 
-| Dataset File | Path | Contents & Description |
+The [Elliptic++ dataset](https://github.com/git-disl/EllipticPlusPlus) is a graph network of **203,769 real Bitcoin blockchain transactions** and **822,942 wallet addresses** created by researchers at Georgia Tech. It is the standard benchmark for graph-based cryptocurrency fraud detection.
+
+### Our Dataset (Synthetic Subset)
+
+Since the full dataset is hosted on Google Drive (~1.5GB) and cannot be auto-loaded, this project ships with a **5,000-transaction synthetic subset** that faithfully mirrors the Elliptic++ format:
+
+| File | Description | Rows |
 |---|---|---|
-| **Blockchain Transactions** | [`backend/data/blockchain_transactions.csv`](file:///c:/Users/yugen/Desktop/boowomp/backend/data/blockchain_transactions.csv) | Multi-hop transaction records containing `tx_hash`, `from_address`, `to_address`, `amount`, `timestamp`, `latency_seconds`, `gas_sponsor`, `tx_type`, and `ground_truth_label`. Models victim drain, rapid forwarding mules, fan-in hubs, and licit commerce. |
-| **KYC Records Database** | [`backend/data/kyc_records.json`](file:///c:/Users/yugen/Desktop/boowomp/backend/data/kyc_records.json) | Verified identity database containing Real Name, National ID (Aadhaar / Passport), Tax ID (PAN), Registered Physical Address, Contact Info, Linked Bank Accounts (Account #, Bank Name, IFSC / SWIFT BIC), IP logs, and Risk Classification. |
+| `txs_features.csv` | 183 features per transaction (166 Elliptic + 17 local) | 5,000 |
+| `txs_classes.csv` | Ground-truth labels: 1=illicit, 2=licit, 3=unknown | 5,000 |
+| `txs_edgelist.csv` | Directed money-flow edges between transactions | 1,405 |
+| `wallets_map.csv` | Maps transaction IDs to from/to wallet addresses | 5,000 |
+| `kyc_records_elliptic.json` | Synthetic KYC records for flagged wallets | 48 |
+
+### Class Distribution
+
+| Class | Label | Count | Percentage |
+|---|---|---|---|
+| 1 | **Illicit** (fraud, darknet, theft) | ~110 | 2.2% |
+| 2 | **Licit** (legitimate transfers) | ~1,030 | 20.6% |
+| 3 | **Unknown** (unlabeled) | ~3,860 | 77.2% |
+
+### How to Replace with Real Elliptic++ Data
+
+1. Download the real dataset from [Google Drive](https://drive.google.com/drive/folders/1MRPXz79Lu_JGLlJ21MDfML44dKN9R08l)
+2. Place `txs_features.csv`, `txs_classes.csv`, and `txs_edgelist.csv` in `backend/data/`
+3. Generate a wallet mapping: Create a `wallets_map.csv` with columns `[txId, from_wallet, to_wallet, amount_btc, timestamp]`
+4. Restart the backend — the model will retrain on the full dataset
 
 ---
 
-## 3. How the Graph Model & Transaction Scoring Work
+## 3. Graph ML Model
 
-### 1. Topological Graph Feature Extraction
-The Graph ML Engine (`GraphFraudModel` in `backend/app/engine/graph_model.py`) extracts deep topological features across the transaction multigraph:
-- **Flow Centrality (PageRank)**: Identifies structural transit hubs and liquidity convergence nodes.
-- **HITS Authority & Hubs**: Differentiates between fund dispersion hubs and terminal sink authorities.
-- **In-Degree vs Out-Degree Flow**: Measures transaction fan-in and fan-out ratios.
-- **Forwarding Velocity**: Flags rapid automated transfers ($\le 30$ seconds latency with $\ge 85\%$ forwarded balance ratio).
-- **Sybil Gas Cluster Linkage**: Detects external third-party gas sponsors subsidizing transaction fees across multiple unlinked mule wallets.
+### Architecture
 
-### 2. Every-Transaction Scoring Against the Model
-Every single transfer is evaluated against the trained topological ensemble classifier:
-- **`fraud_probability`**: Calibrated sigmoid probability ($0.0 - 1.0$).
-- **`fraud_score`**: Calibrated risk index ($0 - 100$).
-- **`classification`**:
-  - **`FRAUDULENT`** (Score $\ge 70$, Crimson Red): Automated rapid forwarding, sweeper bot balance draining, Sybil gas sponsor cluster, terminal offshore cash-out.
-  - **`SUSPICIOUS`** (Score $40 - 69$, Amber): Intermediary hop with moderate velocity or split fan-in pattern.
-  - **`LEGITIMATE`** (Score $< 40$, Emerald Green): Normal commercial/retail transfer or standard peer-to-peer payment.
-- **`risk_factors`**: Explainable feature attribution list (e.g. *"Automated Rapid Forwarding (18s latency)"*, *"Topological Fan-In Consolidation (3 streams converge)"*).
+The fraud detection model uses a **hybrid approach**:
+
+1. **Elliptic Features (183)**: The 166 original Elliptic features (transaction amounts, fees, timing, input/output counts) plus 17 Elliptic++ local features (degree centrality, clustering coefficient, flow velocity, etc.)
+
+2. **Graph Topological Features (8)**: Computed from the transaction edge graph using NetworkX:
+   - PageRank (flow centrality)
+   - HITS Hub & Authority scores
+   - Degree centrality
+   - In-degree & Out-degree
+   - Fan-in / Fan-out ratios
+
+3. **Random Forest Classifier**: Trained on the labeled subset (illicit class 1 vs licit class 2):
+   - 100 estimators, max depth 12
+   - Balanced class weights to handle 10:1 class imbalance
+   - StandardScaler normalization
+
+### Scoring Pipeline
+
+```
+txs_features.csv ─┐
+                    ├─> Merge ─> Add Graph Features ─> Train RF ─> Score ALL 5,000 txs
+txs_classes.csv  ─┘                                     │
+txs_edgelist.csv ─> NetworkX Graph ─> PageRank/HITS ────┘
+                                                          │
+                                                    ┌─────┴─────┐
+                                                    │ fraud_score │
+                                                    │ (0-100)     │
+                                                    └─────────────┘
+                                                          │
+                                              >=70: FRAUDULENT
+                                              40-69: SUSPICIOUS
+                                               <40: LEGITIMATE
+```
+
+### Risk Factors
+
+Each transaction receives human-readable risk factor explanations:
+- Ground-truth illicit labels from Elliptic++
+- Anomalous transaction volume
+- High output concentration (layering indicator)
+- Rapid forward ratio (automated sweeper)
+- High PageRank centrality (hub node)
+- Fan-in convergence (consolidation pattern)
+- Sybil cluster scoring
 
 ---
 
-## 4. Culprit Identification & Automated KYC Resolution
+## 4. KYC Resolution
 
-Once the Graph ML Model flags fraudulent wallets, the **KYC Resolution Engine** (`KYCResolver` in `backend/app/engine/kyc_resolver.py`) automatically unmasks their real-world identities:
+After the model flags culprit wallets, the **KYC Resolver** attempts to unmask real-world identities:
 
-### Mode 1: Direct KYC Match (`DIRECT_KYC_MATCH`)
-- If the culprit wallet is a registered custodial account or known entity, the system directly retrieves the verified identity.
-- *Example*: `0xConsol_99` $\to$ **Vikram Aditya Malhotra**, Aadhaar `AADHAAR-IN-XXXX-XXXX-9142`, HDFC Bank Account `50100491827104` (IFSC: `HDFC0001204`), Rohini, New Delhi.
-- *Example*: `0xVASP_GlobalEx` $\to$ **CryptoGlobal Exchange / Mikhail A. Volkov**, Passport `PASSPORT-RUS-78192044`, Eden Island, Seychelles.
+1. **Direct KYC Match**: If the wallet has a registered KYC record (exchange, verified user)
+2. **Downstream Path Tracing**: For unhosted mule wallets, traces the transaction graph downstream to find the terminal off-ramp where KYC is registered
 
-### Mode 2: Downstream Off-Ramp Path Tracing (`DOWNSTREAM_OFFRAMP_LINKAGE`)
-- If the culprit is an **unhosted private mule wallet** without a direct KYC record (e.g. `0xMule_B1`), the resolver traverses downstream along the transaction graph to find the terminal consolidation node or exchange deposit address where KYC *does* exist.
-- *Result*: Links the anonymous private mule directly to the cash-out beneficiary (e.g., traces `0xMule_B1` 1-hop downstream into `0xConsol_99` / Vikram Aditya Malhotra).
+KYC records include: Full name, National ID (Aadhaar/Passport), Bank accounts (with IFSC/SWIFT), IP addresses, Physical address, Email, Phone.
 
-### Mode 3: BNSS Section 94 Digital Evidence Order Integration
-- When an Investigating Officer generates a digital requisition dossier, the resolved culprit KYC profile is automatically attached as **Annexure A: Culprit Real-World KYC Intelligence** with a cryptographic SHA-256 integrity seal.
+> **Note:** KYC records in this demo are **synthetically generated** to simulate realistic forensic intelligence. In production, these would be sourced from VASP compliance databases.
 
 ---
 
-## 5. How to Run the System
+## 5. How to Run
 
-### Option 1: Run Locally (FastAPI + React Vite)
+### Prerequisites
 
-#### 1. Start the FastAPI Backend:
+- Python 3.11+
+- Node.js 18+
+- pip
+
+### Step 1: Generate Dataset (Optional — already included)
+
 ```bash
 cd backend
-python -m pip install -r requirements.txt
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+python data/generate_elliptic_dataset.py
 ```
-The backend API and Swagger docs will be live at:
-- **API URL**: [http://127.0.0.1:8000](http://127.0.0.1:8000)
-- **Interactive Swagger Docs**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
-#### 2. Start the React Frontend:
+This generates the 5,000-transaction Elliptic++ format dataset in `backend/data/`.
+
+### Step 2: Install Backend Dependencies
+
+```bash
+cd backend
+pip install -r requirements.txt
+```
+
+### Step 3: Start Backend Server
+
+```bash
+cd backend
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+The backend will:
+- Load the Elliptic++ dataset (3 CSV files)
+- Build the NetworkX transaction graph
+- Train the Random Forest classifier on labeled data
+- Score all 5,000 transactions
+- Flag ~71 culprit wallets
+- Resolve KYC for each culprit
+
+### Step 4: Install Frontend Dependencies
+
 ```bash
 cd frontend
 npm install
+```
+
+### Step 5: Start Frontend Dev Server
+
+```bash
+cd frontend
 npm run dev
 ```
-The React 19 + Vite frontend will be live at:
-- **Frontend URL**: [http://127.0.0.1:3000](http://127.0.0.1:3000)
+
+Open http://localhost:5173 in your browser.
 
 ---
 
-### Option 2: Docker Compose (Full Stack with PostgreSQL)
-
-From `backend/`:
-```bash
-cd backend
-docker compose up -d --build
-```
-This automatically spins up:
-- `chaintrace_postgres` (PostgreSQL 16)
-- `chaintrace_redis` (Redis 7)
-- `chaintrace_api` (FastAPI with Alembic migrations and dataset initialization)
-
----
-
-### Option 3: Run the Automated Verification Test Suite
-
-Run the full 13-point test suite covering graph feature extraction, transaction scoring, culprit detection, and KYC unmasking:
-
-```bash
-cd backend
-python tests/test_backend.py
-```
-
-Expected verification output:
-```
---- Starting ChainTrace-I4C Backend Verification Suite ---
-
-1. Testing Multi-Signal Heuristic Matrix...
-   [PASS] Sweeper scoring heuristics verified.
-   [PASS] Gas sponsor profiling heuristics verified.
-   [PASS] Fan-In topology heuristics verified.
-   [PASS] Composite threat index computation verified.
-
-2. Initializing SQLite In-Memory Database and Tables...
-   [PASS] Demo blockchain data seeded.
-
-3. Testing 5-Hop BFS Traversal with Dust Pruning (<3%)...
-   Nodes found: 6 | Links found: 6
-   Terminal exchange: CryptoGlobal Exchange (Hot Wallet 04)
-   Pruned dust branches: 1
-   [PASS] 5-Hop BFS Traversal successfully identified off-ramp and pruned dust.
-
-4. Testing FastAPI HTTP Endpoints via AsyncClient...
-   [PASS] GET /health is online.
-   [PASS] POST /api/auth/login authorized officer credentials.
-   [PASS] POST /api/auth/login rejected unauthorized officer ID.
-   [PASS] GET /api/forensics/trace returned valid ForensicTraceResponse.
-   [PASS] POST /api/forensics/dossier/generate created Dossier BNSS-94.
-   [PASS] GET /api/forensics/stats returned metrics.
-   [PASS] GET /api/forensics/vasp-registry listed registered VASPs.
-   [PASS] GET /api/forensics/wallet/{address} returned wallet profile.
-   [PASS] GET /api/forensics/dossiers listed saved dossiers.
-
-5. Testing Graph ML Fraud Engine & KYC Intelligence API...
-   [PASS] GET /api/graph-ml/dataset/status verified (35 txs, 38 wallets, 19 culprits).
-   [PASS] GET /api/graph-ml/analyze computed scored graph network.
-   [PASS] GET /api/graph-ml/transactions/scored scored 35 transactions (found 24 fraudulent transfers).
-   [PASS] GET /api/graph-ml/culprits/identified unmasked 15 culprits with KYC intelligence.
-   [PASS] GET /api/graph-ml/wallet/0xMule_B1/kyc successfully traced unhosted mule to Vikram Aditya Malhotra.
-
-ALL 13/13 BACKEND VERIFICATION CHECKS PASSED SUCCESSFULLY!
-```
-
----
-
-## 6. API Endpoints Reference
+## 6. API Endpoints
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `POST` | `/api/graph-ml/dataset/load` | Loads custom/default transaction dataset into Graph ML engine and extracts features |
-| `GET` | `/api/graph-ml/dataset/status` | Returns loaded dataset metrics (total txs, unique wallets, detected culprits) |
-| `GET` | `/api/graph-ml/analyze` | Evaluates graph model from target address with BFS propagation and edge risk scores |
-| `GET` | `/api/graph-ml/transactions/scored` | Returns all transactions scored against the graph model with probability & risk factors |
-| `GET` | `/api/graph-ml/culprits/identified` | Lists all flagged culprits with resolved KYC profiles and downstream off-ramp traces |
-| `GET` | `/api/graph-ml/wallet/{address}/kyc` | Unmasks KYC profile for a specific wallet address (direct or downstream traced) |
-| `POST` | `/api/forensics/dossier/generate` | Generates official BNSS-94 evidence requisition with attached culprit KYC intelligence |
-| `GET` | `/api/forensics/trace` | Multi-hop BFS forensic traversal with dynamic dust filter |
-| `GET` | `/health` | Server health check and feature capabilities list |
+| `POST` | `/api/graph-ml/dataset/load` | Load/reload the Elliptic++ dataset |
+| `GET` | `/api/graph-ml/dataset/status` | Current dataset status & metrics |
+| `GET` | `/api/graph-ml/dataset/info` | Detailed Elliptic++ statistics |
+| `GET` | `/api/graph-ml/analyze?target=tx_1&hops=3` | Graph ML analysis from target |
+| `GET` | `/api/graph-ml/transactions/scored?min_score=0&limit=500` | Scored transactions feed |
+| `GET` | `/api/graph-ml/culprits/identified` | All culprit wallets with KYC |
+| `GET` | `/api/graph-ml/wallet/{address}/kyc` | KYC resolution for a wallet |
+| `POST` | `/api/forensics/dossier/generate` | Generate BNSS-94 legal order |
 
 ---
 
-## 7. Frontend User Interface
+## 7. Project Structure
 
-The frontend is built with **React 19 + Vite** featuring a **predominantly white enterprise aesthetic** (`#FFFFFF` cards, luminous slate `#F8FAFC`, crisp borders `#E2E8F0`, Inter / JetBrains Mono typography):
+```
+boowomp/
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── graph_fraud.py      # Graph ML & KYC API routes
+│   │   │   └── forensics.py        # BNSS legal order generation
+│   │   ├── engine/
+│   │   │   ├── graph_model.py      # Random Forest + Graph ML Engine
+│   │   │   └── kyc_resolver.py     # KYC Intelligence Resolver
+│   │   ├── schemas/
+│   │   │   └── graph_fraud.py      # Pydantic response models
+│   │   └── main.py                 # FastAPI application entry
+│   ├── data/
+│   │   ├── txs_features.csv        # Elliptic++ features (5,000 × 185)
+│   │   ├── txs_classes.csv         # Ground-truth labels
+│   │   ├── txs_edgelist.csv        # Transaction edge graph
+│   │   ├── wallets_map.csv         # Tx-to-wallet mapping
+│   │   ├── kyc_records_elliptic.json # Synthetic KYC records
+│   │   └── generate_elliptic_dataset.py  # Dataset generator script
+│   ├── tests/
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx                 # Main React application
+│   │   ├── components/
+│   │   │   ├── RealtimeGraphCanvas.jsx
+│   │   │   ├── CulpritKYCPanel.jsx
+│   │   │   ├── ScoredTransactionsFeed.jsx
+│   │   │   ├── EntityInspector.jsx
+│   │   │   ├── DossierModal.jsx
+│   │   │   └── ErrorBoundary.jsx
+│   │   └── services/
+│   │       └── api.js              # API client
+│   ├── package.json
+│   └── vite.config.js
+└── README.md
+```
 
-1. **Graph Forensics Canvas**:
-   - Interactive force simulation with draggable nodes.
-   - Links colored by Graph ML Model fraud score: Crimson Red ($\ge 70$), Amber ($40-69$), Slate ($<40$).
-   - Real-time animated fund flow particle pulses with speed control ($1\times, 2\times, 4\times$).
-   - Dynamic dust pruning slider ($0.5\% - 5.0\%$).
-2. **Culprit KYC Intelligence Panel**:
-   - Unmasks culprit real names, Aadhaar / Passport numbers, PAN tax IDs, and linked bank accounts (Bank Name, Account #, IFSC/SWIFT).
-   - Distinguishes direct KYC matches from downstream unhosted mule linkages.
-   - Single-click action to locate culprits on the graph or generate an emergency BNSS Sec. 94 order.
-3. **Scored Transactions Feed**:
-   - Comprehensive data table of all transactions scored against the Graph ML Model.
-   - Displays fraud probability %, visual score meter, classification badge, latency, and contributing graph risk factors.
-4. **BNSS Requisition Modal**:
-   - Court-admissible formal digital evidence requisition order with cryptographic SHA-256 seal and Annexure A (Unmasked Culprit KYC).
+---
+
+## 8. References
+
+- **Elliptic++ Dataset**: Youssef Elmougy, Ling Liu. "Elliptic++ Dataset: A Graph Network of Bitcoin Blockchain Transactions and Wallet Addresses." Georgia Institute of Technology. [GitHub](https://github.com/git-disl/EllipticPlusPlus)
+- **Original Elliptic Dataset**: Weber et al., "Anti-Money Laundering in Bitcoin: Experimenting with Graph Convolutional Networks for Financial Forensics," KDD 2019 Workshop.
+- **BNSS**: Bharatiya Nagarik Suraksha Sanhita (2023), Section 94 — Digital Evidence Requisition Order.
