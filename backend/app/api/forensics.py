@@ -101,6 +101,9 @@ async def get_wallet_profile(address: str, db: AsyncSession = Depends(get_db)):
         "heuristics": breakdown
     }
 
+from app.engine.kyc_resolver import kyc_resolver_engine
+from app.engine.graph_model import graph_model_engine
+
 @router.post("/dossier/generate", response_model=RequisitionResponse)
 async def generate_bnss_requisition(
     payload: RequisitionCreate,
@@ -122,6 +125,13 @@ async def generate_bnss_requisition(
     await db.commit()
     await db.refresh(requisition_record)
 
+    # Automatically resolve culprit KYC for terminal exchange or target
+    target_for_kyc = payload.terminalExchange or payload.targetWallet
+    kyc_profile = kyc_resolver_engine.resolve_wallet_kyc(
+        wallet_address=target_for_kyc,
+        graph=graph_model_engine.g if graph_model_engine.is_loaded else None
+    )
+
     return {
         "dossierId": requisition_record.dossier_id,
         "officerId": requisition_record.officer_id,
@@ -129,7 +139,8 @@ async def generate_bnss_requisition(
         "terminalExchange": requisition_record.terminal_exchange,
         "sha256AuditHash": requisition_record.sha256_audit_hash,
         "createdAt": requisition_record.created_at,
-        "legalMandate": "Bharatiya Nagarik Suraksha Sanhita (BNSS) Section 94 Digital Evidence Order"
+        "legalMandate": "Bharatiya Nagarik Suraksha Sanhita (BNSS) Section 94 Digital Evidence Order",
+        "culpritKYC": kyc_profile
     }
 
 @router.get("/dossiers", response_model=List[RequisitionResponse])

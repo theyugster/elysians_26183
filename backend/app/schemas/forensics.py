@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from datetime import datetime
 
 class HeuristicsBreakdown(BaseModel):
@@ -49,6 +49,7 @@ class RequisitionResponse(BaseModel):
     sha256AuditHash: str
     createdAt: datetime
     legalMandate: str
+    culpritKYC: Optional[Dict[str, Any]] = None
 
 class SystemStatsResponse(BaseModel):
     totalTrackedVolume: str

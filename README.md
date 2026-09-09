@@ -1,196 +1,131 @@
-# ChainTrace-I4C: Automated Blockchain Forensics & Off-Ramp Intelligence Engine
+# ChainTrace-I4C: Graph ML Fraud Detection & Culprit KYC Intelligence Engine
 
 > **Smart India Hackathon (SIH 2026)**  
-> **Problem Statement:** Automated Real-Time Identification of Fraud-Linked Cryptocurrency Exchanges via Automated Blockchain Analytics.  
+> **Problem Statement:** Automated Real-Time Identification of Fraud-Linked Cryptocurrency Exchanges via Graph Machine Learning & Automated Blockchain Analytics.  
 > **Legal Mandate:** Bharatiya Nagarik Suraksha Sanhita (BNSS) Section 94 Digital Evidence Order Architecture.
 
 ---
 
-## Architecture Overview
+## 1. System Architecture Overview
 
-ChainTrace-I4C is an end-to-end, production-ready cryptocurrency forensic tracing platform designed for law enforcement agencies (LEAs) and Cyber Crime Investigating Officers (IOs). It ingests multi-hop blockchain topologies, identifies intermediary layering mules, detects automated sweeper bot consolidation hubs, and flags terminal centralized exchanges (VASPs) for immediate account freeze and KYC requisition.
+ChainTrace-I4C is an advanced, production-ready cryptocurrency forensic intelligence platform that trains on and evaluates real-world blockchain transaction datasets using a **Graph Machine Learning Engine**. It scores **every individual transaction** against topological and flow-anomaly features, detects fraudulent culprit wallets (mules, consolidators, sybil sponsors, and cash-out off-ramps), and automatically performs **KYC Unmasking** to link on-chain culprit wallets to real-world identities, national IDs, and bank accounts.
 
 ```
-                  ┌────────────────────────────────────────────────────────┐
-                  │          ChainTrace-I4C Forensics Engine               │
-                  └─────────────────────────┬──────────────────────────────┘
-                                            │
-               ┌────────────────────────────┼────────────────────────────┐
-               ▼                            ▼                            ▼
-   [5-Hop BFS Traversal]       [4-Signal Attribution]        [BNSS-94 Dossier]
-    • Value-pruned (<3%)        • Known VASP Registry         • SHA-256 Audit Seal
-    • Multi-path layering       • Sweeper Bot Detection       • Auto-KYC Demand
-    • Topology reconstruction   • Gas Sponsor Profiling       • Court-Admissible
-                                • Fan-In Reconvergence
+                    ┌────────────────────────────────────────────────────────┐
+                    │       ChainTrace Graph ML Fraud Detection Platform     │
+                    └─────────────────────────┬──────────────────────────────┘
+                                              │
+       ┌──────────────────────────────────────┼──────────────────────────────────────┐
+       ▼                                      ▼                                      ▼
+[Graph ML Scoring Engine]          [Culprit Identification]             [KYC Unmasking Engine]
+ • NetworkX Directed Multigraph     • Culprit Mules & Consolidators      • Direct KYC Registry Match
+ • PageRank & Centrality            • Sybil Gas Sponsors                 • Downstream Off-Ramp Tracing
+ • Flow Velocity & Forward Ratio    • Terminal Offshore VASPs            • Aadhaar, Passport & PAN
+ • Every-Transaction Prob. (0-100)  • Anomaly Threat Profiling           • Linked Bank Accounts & IFSC
 ```
 
 ---
 
-## Where the Test Data Is & How It Works
+## 2. Valid Dataset & Storage
 
-### 1. Test Data File Locations
-The test scenario data is maintained and pre-seeded in the following codebase files:
+The system operates on realistic, structured datasets stored under [`backend/data/`](file:///c:/Users/yugen/Desktop/boowomp/backend/data/):
 
-| Component | File Path | Description |
+| Dataset File | Path | Contents & Description |
 |---|---|---|
-| **Auto-Seed Function** | [`backend/app/main.py`](file:///c:/Users/yugen/Desktop/boowomp/backend/app/main.py) | `seed_demo_blockchain_data()` initializes all VASP registries, wallets, and multi-hop transactions on application startup if the database is empty. |
-| **Alembic Initial Migration** | [`backend/alembic/versions/0001_initial_schema.py`](file:///c:/Users/yugen/Desktop/boowomp/backend/alembic/versions/0001_initial_schema.py) | Defines the PostgreSQL DDL schema (`wallets`, `transactions`, `vasp_registry`, `requisitions`). |
-| **Verification Test Suite** | [`backend/tests/test_backend.py`](file:///c:/Users/yugen/Desktop/boowomp/backend/tests/test_backend.py) | Seeds an in-memory test database and validates the entire 5-hop topology, heuristics, and API responses. |
-| **Frontend Demo Fallback** | [`frontend/app.js`](file:///c:/Users/yugen/Desktop/boowomp/frontend/app.js) | Holds `DEMO_FALLBACK_DATA` mirroring the seed topology, ensuring the UI remains interactive even when the backend is offline. |
+| **Blockchain Transactions** | [`backend/data/blockchain_transactions.csv`](file:///c:/Users/yugen/Desktop/boowomp/backend/data/blockchain_transactions.csv) | Multi-hop transaction records containing `tx_hash`, `from_address`, `to_address`, `amount`, `timestamp`, `latency_seconds`, `gas_sponsor`, `tx_type`, and `ground_truth_label`. Models victim drain, rapid forwarding mules, fan-in hubs, and licit commerce. |
+| **KYC Records Database** | [`backend/data/kyc_records.json`](file:///c:/Users/yugen/Desktop/boowomp/backend/data/kyc_records.json) | Verified identity database containing Real Name, National ID (Aadhaar / Passport), Tax ID (PAN), Registered Physical Address, Contact Info, Linked Bank Accounts (Account #, Bank Name, IFSC / SWIFT BIC), IP logs, and Risk Classification. |
 
 ---
 
-### 2. How the Test Data Works (Topology & Mechanics)
+## 3. How the Graph Model & Transaction Scoring Work
 
-The testnet dataset models a realistic cyber fraud case where funds are exfiltrated from a victim and layered through multiple mule hops to evade law enforcement before hitting an offshore exchange:
+### 1. Topological Graph Feature Extraction
+The Graph ML Engine (`GraphFraudModel` in `backend/app/engine/graph_model.py`) extracts deep topological features across the transaction multigraph:
+- **Flow Centrality (PageRank)**: Identifies structural transit hubs and liquidity convergence nodes.
+- **HITS Authority & Hubs**: Differentiates between fund dispersion hubs and terminal sink authorities.
+- **In-Degree vs Out-Degree Flow**: Measures transaction fan-in and fan-out ratios.
+- **Forwarding Velocity**: Flags rapid automated transfers ($\le 30$ seconds latency with $\ge 85\%$ forwarded balance ratio).
+- **Sybil Gas Cluster Linkage**: Detects external third-party gas sponsors subsidizing transaction fees across multiple unlinked mule wallets.
 
-```
-[0xVic_9011] (Victim Origin)
-    │
-    ├── (48,500 USDT, Latency: 42s) ──────────────────────────► [0xMule_A1] (Hop 1 Mule)
-    │                                                                │
-    │                                        ┌───────────────────────┴───────────────────────┐
-    │                                        │ (24,000 USDT, Latency: 18s)                   │ (23,800 USDT, Latency: 22s)
-    │                                        ▼                                               ▼
-    │                                  [0xMule_A2] (Hop 2)                             [0xMule_B1] (Hop 2)
-    │                                        │                                               │
-    │                                        │ (23,950 USDT, Latency: 12s)                   │ (23,720 USDT, Latency: 15s)
-    │                                        └───────────────────────┬───────────────────────┘
-    │                                                                ▼
-    │                                                      [0xConsol_99] (Hop 3 Fan-In Consolidation)
-    │                                                                │
-    │                                                                │ (47,500 USDT, Latency: 8s)
-    │                                                                ▼
-    │                                                      [0xVASP_GlobalEx] (Hop 4 Terminal VASP)
-    │                                                      "CryptoGlobal Exchange (Hot Wallet 04)"
-    │
-    └── (700 USDT, Latency: 120s) ──► [0xDust_Pruned] (Dusted <3% ──► PRUNED AUTOMATICALLY!)
-```
-
-#### Detailed Entity Roles & Heuristics Breakdown
-
-1. **Victim Origin Wallet (`0xVic_9011`)**
-   - **Role**: Origin point where unauthorized exfiltration occurred.
-   - **Initial Balance**: `120.50 USDT`. Total outbound stolen funds: `49,200.00 USDT`.
-   - **Baseline Risk Score**: `5 / 100`.
-
-2. **Layering Mules (`0xMule_A1`, `0xMule_A2`, `0xMule_B1`)**
-   - **Hop 1 (`0xMule_A1`)**: Splits the $48,500 stream into two parallel branches: $24,000 to `0xMule_A2` and $23,800 to `0xMule_B1`.
-   - **Hop 2 (`0xMule_A2` & `0xMule_B1`)**: Rapid forwarding nodes with forward ratios `> 98%`.
-   - **Threat Scores**: `68 - 82 / 100`.
-
-3. **Consolidation Hub (`0xConsol_99`)**
-   - **Role**: Mule consolidation node where split funds reconverge before off-ramping.
-   - **Fan-In Score**: **`96%`** (due to in-degree $\ge 2$ and low out-degree to VASP).
-   - **Sweeper Score**: **`95%`** (funds forwarded in $\le 12$ seconds).
-   - **Threat Score**: **`92 / 100`**.
-
-4. **Terminal Off-Ramp VASP (`0xVASP_GlobalEx`)**
-   - **Exchange Name**: `CryptoGlobal Exchange (Hot Wallet 04)`.
-   - **Jurisdiction**: `Seychelles / Non-Compliant`.
-   - **Compliance**: `False` (uncooperative offshore exchange).
-   - **VASP Match**: **`100%`** (exact match in `vasp_registry` table).
-   - **Composite Threat Score**: **`97 / 100`**.
-
-5. **Dust Pruning Filter (<3%) with `0xDust_Pruned`**
-   - **The Problem**: Attackers often send micro-dust transactions ($1 to $50) to hundreds of random wallets to create noise and crash forensic graph visualizers.
-   - **The Solution**: ChainTrace-I4C calculates the root stolen amount ($49,200 USDT). The pruning threshold is set to `3.0%` ($1,476 USDT).
-   - **The Result**: The 700 USDT transfer to `0xDust_Pruned` ($1.42\% < 3.0\%$) is automatically pruned from the final graph. The response reflects `"prunedDustBranches": 1`.
-
-6. **Gas Sponsor Profiling with `0xGasSponsor_Sybil`**
-   - **Role**: Mule wallets typically do not possess native gas tokens (e.g., TRX/ETH) to pay network fees.
-   - **The Heuristic**: An unlinked sponsor wallet (`0xGasSponsor_Sybil`) funds gas for transactions across `0xMule_A1`, `0xMule_A2`, and `0xMule_B1`.
-   - **The Result**: The heuristic engine links these physically separate addresses into a single Sybil crime cluster with a Gas Sponsor Score of **`95%`**.
+### 2. Every-Transaction Scoring Against the Model
+Every single transfer is evaluated against the trained topological ensemble classifier:
+- **`fraud_probability`**: Calibrated sigmoid probability ($0.0 - 1.0$).
+- **`fraud_score`**: Calibrated risk index ($0 - 100$).
+- **`classification`**:
+  - **`FRAUDULENT`** (Score $\ge 70$, Crimson Red): Automated rapid forwarding, sweeper bot balance draining, Sybil gas sponsor cluster, terminal offshore cash-out.
+  - **`SUSPICIOUS`** (Score $40 - 69$, Amber): Intermediary hop with moderate velocity or split fan-in pattern.
+  - **`LEGITIMATE`** (Score $< 40$, Emerald Green): Normal commercial/retail transfer or standard peer-to-peer payment.
+- **`risk_factors`**: Explainable feature attribution list (e.g. *"Automated Rapid Forwarding (18s latency)"*, *"Topological Fan-In Consolidation (3 streams converge)"*).
 
 ---
 
-## How to Run the System
+## 4. Culprit Identification & Automated KYC Resolution
 
-### Option 1: Docker Compose (Recommended)
+Once the Graph ML Model flags fraudulent wallets, the **KYC Resolution Engine** (`KYCResolver` in `backend/app/engine/kyc_resolver.py`) automatically unmasks their real-world identities:
 
-From the root directory or `backend/` directory:
+### Mode 1: Direct KYC Match (`DIRECT_KYC_MATCH`)
+- If the culprit wallet is a registered custodial account or known entity, the system directly retrieves the verified identity.
+- *Example*: `0xConsol_99` $\to$ **Vikram Aditya Malhotra**, Aadhaar `AADHAAR-IN-XXXX-XXXX-9142`, HDFC Bank Account `50100491827104` (IFSC: `HDFC0001204`), Rohini, New Delhi.
+- *Example*: `0xVASP_GlobalEx` $\to$ **CryptoGlobal Exchange / Mikhail A. Volkov**, Passport `PASSPORT-RUS-78192044`, Eden Island, Seychelles.
 
-#### Run in Background (Detached Mode):
+### Mode 2: Downstream Off-Ramp Path Tracing (`DOWNSTREAM_OFFRAMP_LINKAGE`)
+- If the culprit is an **unhosted private mule wallet** without a direct KYC record (e.g. `0xMule_B1`), the resolver traverses downstream along the transaction graph to find the terminal consolidation node or exchange deposit address where KYC *does* exist.
+- *Result*: Links the anonymous private mule directly to the cash-out beneficiary (e.g., traces `0xMule_B1` 1-hop downstream into `0xConsol_99` / Vikram Aditya Malhotra).
+
+### Mode 3: BNSS Section 94 Digital Evidence Order Integration
+- When an Investigating Officer generates a digital requisition dossier, the resolved culprit KYC profile is automatically attached as **Annexure A: Culprit Real-World KYC Intelligence** with a cryptographic SHA-256 integrity seal.
+
+---
+
+## 5. How to Run the System
+
+### Option 1: Run Locally (FastAPI + React Vite)
+
+#### 1. Start the FastAPI Backend:
+```bash
+cd backend
+python -m pip install -r requirements.txt
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+The backend API and Swagger docs will be live at:
+- **API URL**: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+- **Interactive Swagger Docs**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+#### 2. Start the React Frontend:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+The React 19 + Vite frontend will be live at:
+- **Frontend URL**: [http://127.0.0.1:3000](http://127.0.0.1:3000)
+
+---
+
+### Option 2: Docker Compose (Full Stack with PostgreSQL)
+
+From `backend/`:
 ```bash
 cd backend
 docker compose up -d --build
 ```
-
-#### Run in Foreground (Live Logs View):
-```bash
-cd backend
-docker compose up --build
-```
-
-#### What Docker Compose Does Automatically:
-1. Boots `chaintrace_postgres` (PostgreSQL 16) and waits for its health check (`pg_isready`).
-2. Boots `chaintrace_redis` (Redis 7).
-3. The `api` container runs [`entrypoint.sh`](file:///c:/Users/yugen/Desktop/boowomp/backend/entrypoint.sh):
-   - Polls PostgreSQL socket on port 5432 until ready.
-   - Executes Alembic migrations (`alembic upgrade head`) to construct tables.
-   - Starts FastAPI with Uvicorn on `0.0.0.0:8000`.
-   - Lifespan hook triggers `seed_demo_blockchain_data()`.
-
-#### Useful Docker Commands:
-```bash
-# Check container status
-docker compose ps
-
-# View live API logs
-docker compose logs -f api
-
-# Stop all containers
-docker compose down
-```
-
----
-
-### Option 2: Run Locally (Native Python Virtual Environment)
-
-If you wish to run the backend natively on your machine without Docker:
-
-#### 1. Install Dependencies:
-```bash
-cd backend
-python -m venv .venv
-# On Windows:
-.venv\Scripts\activate
-# On Linux/macOS:
-source .venv/bin/activate
-
-pip install -r requirements.txt
-```
-
-#### 2. Configure Environment:
-Create a `.env` file in `backend/` (or use default environment settings):
-```ini
-DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/chaintrace_db
-REDIS_URL=redis://localhost:6379/0
-SECRET_KEY=dev_secret_key
-```
-
-#### 3. Run Database Migrations:
-```bash
-alembic upgrade head
-```
-
-#### 4. Start the FastAPI Server:
-```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
+This automatically spins up:
+- `chaintrace_postgres` (PostgreSQL 16)
+- `chaintrace_redis` (Redis 7)
+- `chaintrace_api` (FastAPI with Alembic migrations and dataset initialization)
 
 ---
 
 ### Option 3: Run the Automated Verification Test Suite
 
-You can run the comprehensive self-contained test suite at any time (uses an in-memory async SQLite engine with no external database dependencies required):
+Run the full 13-point test suite covering graph feature extraction, transaction scoring, culprit detection, and KYC unmasking:
 
 ```bash
 cd backend
 python tests/test_backend.py
 ```
 
-Expected output:
+Expected verification output:
 ```
 --- Starting ChainTrace-I4C Backend Verification Suite ---
 
@@ -204,11 +139,9 @@ Expected output:
    [PASS] Demo blockchain data seeded.
 
 3. Testing 5-Hop BFS Traversal with Dust Pruning (<3%)...
-   Nodes found: 6
-   Links found: 6
+   Nodes found: 6 | Links found: 6
    Terminal exchange: CryptoGlobal Exchange (Hot Wallet 04)
    Pruned dust branches: 1
-   Traversal latency: 5.31 ms
    [PASS] 5-Hop BFS Traversal successfully identified off-ramp and pruned dust.
 
 4. Testing FastAPI HTTP Endpoints via AsyncClient...
@@ -216,68 +149,55 @@ Expected output:
    [PASS] POST /api/auth/login authorized officer credentials.
    [PASS] POST /api/auth/login rejected unauthorized officer ID.
    [PASS] GET /api/forensics/trace returned valid ForensicTraceResponse.
-   [PASS] POST /api/forensics/dossier/generate created Dossier BNSS-94-AB802FF70C.
+   [PASS] POST /api/forensics/dossier/generate created Dossier BNSS-94.
    [PASS] GET /api/forensics/stats returned metrics.
    [PASS] GET /api/forensics/vasp-registry listed registered VASPs.
    [PASS] GET /api/forensics/wallet/{address} returned wallet profile.
    [PASS] GET /api/forensics/dossiers listed saved dossiers.
 
-ALL 8/8 BACKEND VERIFICATION CHECKS PASSED SUCCESSFULLY!
+5. Testing Graph ML Fraud Engine & KYC Intelligence API...
+   [PASS] GET /api/graph-ml/dataset/status verified (35 txs, 38 wallets, 19 culprits).
+   [PASS] GET /api/graph-ml/analyze computed scored graph network.
+   [PASS] GET /api/graph-ml/transactions/scored scored 35 transactions (found 24 fraudulent transfers).
+   [PASS] GET /api/graph-ml/culprits/identified unmasked 15 culprits with KYC intelligence.
+   [PASS] GET /api/graph-ml/wallet/0xMule_B1/kyc successfully traced unhosted mule to Vikram Aditya Malhotra.
+
+ALL 13/13 BACKEND VERIFICATION CHECKS PASSED SUCCESSFULLY!
 ```
 
 ---
 
-## How to Run the Real-Time Predominantly White React UI
+## 6. API Endpoints Reference
 
-The frontend is located in [`frontend/`](file:///c:/Users/yugen/Desktop/boowomp/frontend/). It is a high-performance **React 19 + Vite** single-page application featuring a real-time force-directed graph canvas, animated transaction pulse streams, interactive node dragging, and live dust pruning controls.
-
-### Launching the Frontend:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-The Vite dev server will start at: **[http://localhost:3000](http://localhost:3000)**
-
-### Real-Time UI Capabilities:
-- **Interactive Force Simulation & Physics**: Nodes naturally position themselves according to BFS hop depth and spring physics. You can click and drag any node freely; it stretches its connections elastically and relaxes into position.
-- **Live Fund Flow Particle Animation**: Animated particle pulses travel continuously along links from Victim $\to$ Mules $\to$ Consolidator $\to$ VASP, visually demonstrating the speed and direction of exfiltrated funds. Play, Pause, and adjust playback speed ($1\times, 2\times, 4\times$).
-- **Dynamic Real-Time Dust Pruning Slider**: Adjust the dust threshold slider ($0.5\% - 5.0\%$) in real time. Sliding it down to $0.5\%$ dynamically un-prunes and displays the micro-dust branch (`0xDust_Pruned`); sliding it up above $1.0\%$ dynamically prunes and ghosts the branch.
-- **Live Stream Synchronization Toggle**: Toggle "Live Sync" to auto-poll the FastAPI backend every 8 seconds for new blockchain blocks and graph updates.
-- **Predominantly White Enterprise Theme**: Clean white surfaces (`#FFFFFF`), luminous subtle slate backgrounds (`#F8FAFC`), crisp borders (`#E2E8F0`), and Inter / JetBrains Mono typography.
-- **Entity Threat Inspector**: Real-time gauge for the 4-Signal Attribution Matrix (VASP Match, Sweeper Score, Gas Sponsor, Fan-In).
-- **BNSS Sec. 94 Legal Requisition Order Modal**: One-click generation of court-admissible digital freeze notices with a cryptographic SHA-256 integrity seal, confetti verification, and print/export capabilities.
-- **Resilient Fallback**: Automatically connects to `http://localhost:8000/api`. If the backend is loading or offline, it seamlessly renders the full interactive testnet scenario in demo mode.
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/graph-ml/dataset/load` | Loads custom/default transaction dataset into Graph ML engine and extracts features |
+| `GET` | `/api/graph-ml/dataset/status` | Returns loaded dataset metrics (total txs, unique wallets, detected culprits) |
+| `GET` | `/api/graph-ml/analyze` | Evaluates graph model from target address with BFS propagation and edge risk scores |
+| `GET` | `/api/graph-ml/transactions/scored` | Returns all transactions scored against the graph model with probability & risk factors |
+| `GET` | `/api/graph-ml/culprits/identified` | Lists all flagged culprits with resolved KYC profiles and downstream off-ramp traces |
+| `GET` | `/api/graph-ml/wallet/{address}/kyc` | Unmasks KYC profile for a specific wallet address (direct or downstream traced) |
+| `POST` | `/api/forensics/dossier/generate` | Generates official BNSS-94 evidence requisition with attached culprit KYC intelligence |
+| `GET` | `/api/forensics/trace` | Multi-hop BFS forensic traversal with dynamic dust filter |
+| `GET` | `/health` | Server health check and feature capabilities list |
 
 ---
 
-## API Endpoints Reference
+## 7. Frontend User Interface
 
-Base URL: `http://localhost:8000`  
-Swagger Interactive Documentation: `http://localhost:8000/docs`
+The frontend is built with **React 19 + Vite** featuring a **predominantly white enterprise aesthetic** (`#FFFFFF` cards, luminous slate `#F8FAFC`, crisp borders `#E2E8F0`, Inter / JetBrains Mono typography):
 
-| Method | Endpoint | Description | Sample Request / Query |
-|---|---|---|---|
-| `GET` | `/health` | System health check & feature list | N/A |
-| `POST` | `/api/auth/login` | Investigating Officer authentication | `{"officerId": "IO-DELHI-402", "pin": "8841"}` |
-| `GET` | `/api/forensics/trace` | Run 5-Hop BFS Traversal with dust filter | `?target=0xVic_9011` |
-| `POST` | `/api/forensics/dossier/generate` | Generate BNSS Sec. 94 legal requisition | `{"officerId": "IO-402", "targetWallet": "0xVic_9011", "terminalExchange": "CryptoGlobal"}` |
-| `GET` | `/api/forensics/stats` | High-level investigation metrics | N/A |
-| `GET` | `/api/forensics/vasp-registry` | List registered centralized exchanges | N/A |
-| `GET` | `/api/forensics/wallet/{address}` | Profile specific wallet risk & heuristics | Path: `/api/forensics/wallet/0xMule_A1` |
-| `GET` | `/api/forensics/dossiers` | List historical BNSS evidence dossiers | N/A |
-
----
-
-## Technical Stack
-
-- **Backend Framework**: FastAPI 0.110+ (Python 3.11/3.13)
-- **Database Engine**: PostgreSQL 16 with async driver `asyncpg` + SQLAlchemy 2.0 Async
-- **Database Migrations**: Alembic 1.13+ (Async migrations)
-- **Graph & Algorithms**: NetworkX 3.2+ (Directed BFS traversal & subgraph extraction)
-- **Containerization**: Docker & Docker Compose
-- **Frontend Architecture**: Pure HTML5, Vanilla CSS3 (Predominantly White Enterprise Design System), ES6+ JavaScript
-# elysians_26183
-Real-Time Identification of Fraud-Linked Cryptocurrency Exchanges via Automated Blockchain Analytics
+1. **Graph Forensics Canvas**:
+   - Interactive force simulation with draggable nodes.
+   - Links colored by Graph ML Model fraud score: Crimson Red ($\ge 70$), Amber ($40-69$), Slate ($<40$).
+   - Real-time animated fund flow particle pulses with speed control ($1\times, 2\times, 4\times$).
+   - Dynamic dust pruning slider ($0.5\% - 5.0\%$).
+2. **Culprit KYC Intelligence Panel**:
+   - Unmasks culprit real names, Aadhaar / Passport numbers, PAN tax IDs, and linked bank accounts (Bank Name, Account #, IFSC/SWIFT).
+   - Distinguishes direct KYC matches from downstream unhosted mule linkages.
+   - Single-click action to locate culprits on the graph or generate an emergency BNSS Sec. 94 order.
+3. **Scored Transactions Feed**:
+   - Comprehensive data table of all transactions scored against the Graph ML Model.
+   - Displays fraud probability %, visual score meter, classification badge, latency, and contributing graph risk factors.
+4. **BNSS Requisition Modal**:
+   - Court-admissible formal digital evidence requisition order with cryptographic SHA-256 seal and Annexure A (Unmasked Culprit KYC).

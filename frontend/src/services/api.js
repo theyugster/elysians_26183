@@ -135,6 +135,79 @@ export async function fetchForensicTrace(target) {
   return DEMO_TOPOLOGY;
 }
 
+export async function fetchDatasetStatus() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/graph-ml/dataset/status`);
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("Dataset status error:", e);
+  }
+  return {
+    status: "STANDALONE_CACHE",
+    total_transactions: 36,
+    unique_wallets: 38,
+    graph_edges: 35,
+    culprits_detected: 19,
+    dataset_file: "blockchain_transactions.csv"
+  };
+}
+
+export async function loadDataset(datasetPath = null) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/graph-ml/dataset/load`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(datasetPath ? { dataset_path: datasetPath } : {})
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("Dataset load error:", e);
+  }
+  return null;
+}
+
+export async function fetchGraphAnalysis(target = "0xVic_9011", hops = 5) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/graph-ml/analyze?target=${encodeURIComponent(target)}&hops=${hops}`);
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("Graph analyze error:", e);
+  }
+  return null;
+}
+
+export async function fetchScoredTransactions(minScore = 0, classification = null) {
+  try {
+    let url = `${API_BASE_URL}/graph-ml/transactions/scored?min_score=${minScore}`;
+    if (classification) url += `&classification=${encodeURIComponent(classification)}`;
+    const res = await fetch(url);
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("Scored transactions error:", e);
+  }
+  return [];
+}
+
+export async function fetchIdentifiedCulprits() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/graph-ml/culprits/identified`);
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("Culprits fetch error:", e);
+  }
+  return [];
+}
+
+export async function fetchWalletKyc(address) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/graph-ml/wallet/${encodeURIComponent(address)}/kyc`);
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("Wallet KYC error:", e);
+  }
+  return null;
+}
+
 export async function createBnssRequisition(payload) {
   try {
     const res = await fetch(`${API_BASE_URL}/forensics/dossier/generate`, {

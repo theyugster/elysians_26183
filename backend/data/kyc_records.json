@@ -1,0 +1,198 @@
+[
+  {
+    "wallet_address": "0xVASP_GlobalEx",
+    "entity_name": "CryptoGlobal Exchange Services Ltd (Hot Wallet 04)",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "UNCOOPERATIVE_OFFSHORE",
+    "primary_beneficiary": "Volkov Holdings Inc. / Mikhail A. Volkov",
+    "national_id": "PASSPORT-RUS-78192044",
+    "tax_id": "TAX-SEY-990141",
+    "jurisdiction": "Victoria, Mahé, Seychelles (Offshore Non-FATF)",
+    "physical_address": "Suite 402, Eden Plaza, Eden Island, Mahe, Seychelles",
+    "registered_email": "compliance-desk@cryptoglobal-ex.io",
+    "registered_phone": "+248 4 670 910",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Offshore Merchant Bank of Vanuatu",
+        "account_number": "VU91-2004-9812-4410",
+        "swift_bic": "OMBVVUVU",
+        "currency": "USD"
+      }
+    ],
+    "associated_ips": ["185.220.101.44", "194.26.29.112"],
+    "account_creation_date": "2024-02-15T08:30:00Z",
+    "risk_classification": "CRITICAL_OFFRAMP_SUSPECT"
+  },
+  {
+    "wallet_address": "0xConsol_99",
+    "entity_name": "Vikram Aditya Malhotra (Syndicate Consolidation Node)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Vikram Aditya Malhotra",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-9142 / PAN-AAPPM9102K",
+    "tax_id": "PAN-AAPPM9102K",
+    "jurisdiction": "New Delhi, India",
+    "physical_address": "H-24, Sector 15, Rohini, New Delhi, 110089, India",
+    "registered_email": "v.malhotra.invest99@gmail.com",
+    "registered_phone": "+91 98110 49122",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "HDFC Bank Ltd",
+        "account_number": "50100491827104",
+        "swift_bic": "HDFCINBB",
+        "ifsc": "HDFC0001204",
+        "currency": "INR"
+      }
+    ],
+    "associated_ips": ["103.212.144.18", "103.48.198.5"],
+    "account_creation_date": "2025-08-10T14:22:10Z",
+    "risk_classification": "PRIMARY_SYNDICATE_CULPRIT"
+  },
+  {
+    "wallet_address": "0xGasSponsor_Sybil",
+    "entity_name": "Sybil Gas Automation Cluster Master (Chen Wei International)",
+    "entity_type": "SYBIL_GAS_SPONSOR",
+    "kyc_status": "FLAGGED_HIGH_RISK",
+    "primary_beneficiary": "Chen Wei / Golden Dragon Trading Ltd",
+    "national_id": "PASSPORT-HKG-E8819204",
+    "tax_id": "HK-BRN-6601928",
+    "jurisdiction": "Hong Kong SAR / Belize",
+    "physical_address": "Room 1804, Hollywood Commercial Center, Mong Kok, Kowloon, Hong Kong",
+    "registered_email": "c.wei@goldendragon-trd.com",
+    "registered_phone": "+852 2398 1044",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "East Asia Merchant Bank Ltd",
+        "account_number": "HK04-EAMB-9102-3341",
+        "swift_bic": "EAMBHKHH",
+        "currency": "USD"
+      }
+    ],
+    "associated_ips": ["45.154.255.89", "185.191.171.12"],
+    "account_creation_date": "2024-11-20T03:12:00Z",
+    "risk_classification": "AUTOMATION_COORDINATOR"
+  },
+  {
+    "wallet_address": "0xVASP_OffshoreX",
+    "entity_name": "OffshoreX Trading Terminal BVI",
+    "entity_type": "CENTRALIZED_EXCHANGE",
+    "kyc_status": "SHELL_JURISDICTION",
+    "primary_beneficiary": "OffshoreX Global Capital Corp / Marcus Sterling",
+    "national_id": "PASSPORT-GBR-55419028",
+    "tax_id": "BVI-CO-88192",
+    "jurisdiction": "Road Town, Tortola, British Virgin Islands",
+    "physical_address": "Wickhams Cay 1, P.O. Box 3140, Road Town, Tortola, BVI",
+    "registered_email": "operations@offshorex-desk.cc",
+    "registered_phone": "+1 284 494 2011",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "BVI Commercial Bank",
+        "account_number": "VG41-BVIC-0012-9904",
+        "swift_bic": "BVICVGAA",
+        "currency": "USD"
+      }
+    ],
+    "associated_ips": ["198.51.100.45", "203.0.113.88"],
+    "account_creation_date": "2024-06-01T10:00:00Z",
+    "risk_classification": "OFFRAMP_HOST"
+  },
+  {
+    "wallet_address": "0xConsol_88",
+    "entity_name": "Rohit Surendra Verma (Layering Hub)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_MULE_ACC",
+    "primary_beneficiary": "Rohit Surendra Verma",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-4419 / PAN-BKUPV4419M",
+    "tax_id": "PAN-BKUPV4419M",
+    "jurisdiction": "Mumbai, Maharashtra, India",
+    "physical_address": "Flat 304, Sea Breeze Apt, Andheri West, Mumbai, 400058, India",
+    "registered_email": "rohit.verma.fx@outlook.com",
+    "registered_phone": "+91 97690 11488",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "ICICI Bank Ltd",
+        "account_number": "001401598214",
+        "swift_bic": "ICICINBB",
+        "ifsc": "ICIC0000014",
+        "currency": "INR"
+      }
+    ],
+    "associated_ips": ["49.36.128.44", "103.248.88.92"],
+    "account_creation_date": "2025-09-12T11:45:00Z",
+    "risk_classification": "MULE_RING_OPERATOR"
+  },
+  {
+    "wallet_address": "0xConsol_77",
+    "entity_name": "Sergey Nikolaevich Bogdanov (Exfiltration Ring 77)",
+    "entity_type": "MULE_CONSOLIDATOR",
+    "kyc_status": "VERIFIED_INDIVIDUAL",
+    "primary_beneficiary": "Sergey Nikolaevich Bogdanov",
+    "national_id": "PASSPORT-RUS-45091823",
+    "tax_id": "INN-7704192081",
+    "jurisdiction": "Almaty, Kazakhstan / Moscow, Russia",
+    "physical_address": "Dostyk Ave 105, Almaty 050051, Kazakhstan",
+    "registered_email": "sergey.bogdanov.crypto@yandex.ru",
+    "registered_phone": "+7 727 349 1102",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Kaspi Bank JSC",
+        "account_number": "KZ44-9182-0041-9921",
+        "swift_bic": "CASPKZKA",
+        "currency": "KZT"
+      }
+    ],
+    "associated_ips": ["92.46.33.109", "178.88.75.20"],
+    "account_creation_date": "2025-01-20T16:00:00Z",
+    "risk_classification": "CROSS_BORDER_CULPRIT"
+  },
+  {
+    "wallet_address": "0xMule_A1",
+    "entity_name": "Karan Singhania (Layer 1 Mule Proxy)",
+    "entity_type": "UNHOSTED_MULE_TRACED",
+    "kyc_status": "UNHOSTED_WALLET_LINKED",
+    "primary_beneficiary": "Karan Singhania (Downstream beneficiary of 0xConsol_99 / Vikram Malhotra)",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-1102",
+    "tax_id": "PAN-AQZPS1102B",
+    "jurisdiction": "Bengaluru, Karnataka, India",
+    "physical_address": "42, 4th Cross, Indiranagar, Bengaluru, 560038, India",
+    "registered_email": "karan.s.proxy@gmail.com",
+    "registered_phone": "+91 99001 88201",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "State Bank of India",
+        "account_number": "31092849102",
+        "swift_bic": "SBININBB",
+        "ifsc": "SBIN0000812",
+        "currency": "INR"
+      }
+    ],
+    "associated_ips": ["106.51.22.14"],
+    "account_creation_date": "2025-10-04T09:15:00Z",
+    "risk_classification": "FORWARDING_MULE"
+  },
+  {
+    "wallet_address": "0xLicit_User_05",
+    "entity_name": "Ananya Sharma (Verified Retail Trader)",
+    "entity_type": "LICIT_RETAIL_USER",
+    "kyc_status": "TIER_2_VERIFIED",
+    "primary_beneficiary": "Ananya Sharma",
+    "national_id": "AADHAAR-IN-XXXX-XXXX-5501",
+    "tax_id": "PAN-BKKPS5501A",
+    "jurisdiction": "Pune, Maharashtra, India",
+    "physical_address": "B-12, Green Acres, Baner Road, Pune, 411045, India",
+    "registered_email": "ananya.sharma92@yahoo.in",
+    "registered_phone": "+91 98220 33419",
+    "linked_bank_accounts": [
+      {
+        "bank_name": "Axis Bank Ltd",
+        "account_number": "918010049182741",
+        "swift_bic": "AXISINBB",
+        "ifsc": "UTIB0000037",
+        "currency": "INR"
+      }
+    ],
+    "associated_ips": ["14.139.122.88"],
+    "account_creation_date": "2023-04-18T12:00:00Z",
+    "risk_classification": "LEGITIMATE_USER"
+  }
+]

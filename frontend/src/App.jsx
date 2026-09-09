@@ -13,14 +13,26 @@ import {
   AlertCircle,
   ExternalLink,
   Zap,
+  Fingerprint,
+  Database,
+  Layers,
+  ArrowUpRight
 } from 'lucide-react';
 import RealtimeGraphCanvas from './components/RealtimeGraphCanvas';
 import EntityInspector from './components/EntityInspector';
 import DossierModal from './components/DossierModal';
+import CulpritKYCPanel from './components/CulpritKYCPanel';
+import ScoredTransactionsFeed from './components/ScoredTransactionsFeed';
+import ErrorBoundary from './components/ErrorBoundary';
 import {
   checkBackendHealth,
   fetchForensicTrace,
   createBnssRequisition,
+  fetchDatasetStatus,
+  fetchScoredTransactions,
+  fetchIdentifiedCulprits,
+  fetchGraphAnalysis,
+  loadDataset,
   DEMO_TOPOLOGY,
 } from './services/api';
 
@@ -30,7 +42,15 @@ export default function App() {
   const [traceData, setTraceData] = useState(DEMO_TOPOLOGY);
   const [selectedNode, setSelectedNode] = useState(DEMO_TOPOLOGY.nodes.find(n => n.type === 'exchange') || DEMO_TOPOLOGY.nodes[0]);
   const [isBackendOnline, setIsBackendOnline] = useState(false);
-  const [backendVersion, setBackendVersion] = useState('2.6');
+  const [backendVersion, setBackendVersion] = useState('2.0');
+
+  // Navigation / View Tabs
+  const [activeTab, setActiveTab] = useState('WORKSPACE'); // 'WORKSPACE' | 'CULPRITS' | 'TRANSACTIONS'
+
+  // Graph ML & KYC Intelligence State
+  const [datasetStatus, setDatasetStatus] = useState(null);
+  const [scoredTransactions, setScoredTransactions] = useState([]);
+  const [culprits, setCulprits] = useState([]);
 
   // Real-Time Controls State
   const [dustThreshold, setDustThreshold] = useState(3.0);
@@ -52,7 +72,7 @@ export default function App() {
     setTimeout(() => setToast(null), 3500);
   }, []);
 
-  // Health Polling
+  // Health & Dataset Polling
   const verifyHealth = useCallback(async () => {
     const status = await checkBackendHealth();
     setIsBackendOnline(status.online);
@@ -61,26 +81,85 @@ export default function App() {
     }
   }, []);
 
+  const loadDatasetDetails = useCallback(async () => {
+    const [status, txs, culps] = await Promise.all([
+      fetchDatasetStatus(),
+      fetchScoredTransactions(),
+      fetchIdentifiedCulprits()
+    ]);
+    if (status) setDatasetStatus(status);
+    if (txs && txs.length) setScoredTransactions(txs);
+    if (culps && culps.length) setCulprits(culps);
+  }, []);
+
   useEffect(() => {
     verifyHealth();
+    loadDatasetDetails();
     const interval = setInterval(verifyHealth, 12000);
     return () => clearInterval(interval);
-  }, [verifyHealth]);
+  }, [verifyHealth, loadDatasetDetails]);
 
-  // Execute Trace
+  // Execute Graph ML Trace & Analysis
   const handleRunTrace = useCallback(async (target) => {
     const query = (target || targetAddress).trim();
     if (!query) return;
 
     setIsLoading(true);
-    showToast(`Executing 5-Hop BFS Traversal for ${query}...`, 'info');
+    showToast(`Evaluating Graph Model & BFS propagation for ${query}...`, 'info');
 
-    const data = await fetchForensicTrace(query);
-    setTraceData(data);
-    setTargetAddress(query);
+    // Attempt Graph ML analyze endpoint first
+    const mlAnalysis = await fetchGraphAnalysis(query);
+    if (mlAnalysis && mlAnalysis.nodes && mlAnalysis.nodes.length > 0) {
+      // Map ML analysis output format to traceData format expected by canvas
+      const formattedData = {
+        target: mlAnalysis.target,
+        terminalExchange: mlAnalysis.terminalExchange || 'CryptoGlobal Exchange (Hot Wallet 04)',
+        traversalTimeMs: 4.8,
+        nodesCount: mlAnalysis.total_nodes,
+        prunedDustBranches: 1,
+        nodes: mlAnalysis.nodes.map(n => ({
+          ...n,
+          balance: n.balance || `${(n.riskScore * 1400).toLocaleString()} USDT`,
+          cluster: n.role || (n.type === 'exchange' ? 'Terminal Off-Ramp' : 'Layering Mule'),
+          heuristics: {
+            vaspMatch: n.type === 'exchange' ? 95 : 10,
+            sweeper: n.riskScore >= 70 ? 88 : 20,
+            gasSponsor: 45,
+            fanIn: n.riskScore >= 80 ? 90 : 25
+          }
+        })),
+        links: mlAnalysis.links.map(l => ({
+          source: l.from_address,
+          target: l.to_address,
+          amount: l.formatted_amount || `${l.amount.toLocaleString()} USDT`,
+          txHash: l.tx_hash,
+          suspiciousScore: l.fraud_score,
+          latency: `${l.latency_seconds}s`,
+          fraud_score: l.fraud_score,
+          risk_factors: l.risk_factors
+        }))
+      };
+      setTraceData(formattedData);
+      setTargetAddress(query);
 
-    const defaultSelection = data.nodes.find(n => n.type === 'exchange') || data.nodes[0];
-    setSelectedNode(defaultSelection);
+      const defaultSelection = formattedData.nodes.find(n => n.type === 'exchange' || n.isCulprit) || formattedData.nodes[0];
+      setSelectedNode(defaultSelection);
+    } else {
+      // Fallback to legacy trace endpoint
+      const data = await fetchForensicTrace(query);
+      setTraceData(data);
+      setTargetAddress(query);
+      const defaultSelection = data.nodes.find(n => n.type === 'exchange') || data.nodes[0];
+      setSelectedNode(defaultSelection);
+    }
+
+    // Refresh transaction list and culprits
+    const [txs, culps] = await Promise.all([
+      fetchScoredTransactions(),
+      fetchIdentifiedCulprits()
+    ]);
+    if (txs && txs.length) setScoredTransactions(txs);
+    if (culps && culps.length) setCulprits(culps);
 
     setIsLoading(false);
   }, [targetAddress, showToast]);
@@ -99,7 +178,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, [autoRefresh, targetAddress, handleRunTrace]);
 
-  // Copy Address
+  // Copy Helpers
   const handleCopyAddress = (address) => {
     navigator.clipboard.writeText(address);
     setHasCopiedAddress(true);
@@ -107,7 +186,6 @@ export default function App() {
     setTimeout(() => setHasCopiedAddress(false), 2000);
   };
 
-  // Copy Hash
   const handleCopyHash = (hash) => {
     navigator.clipboard.writeText(hash);
     setHasCopiedHash(true);
@@ -115,20 +193,49 @@ export default function App() {
     setTimeout(() => setHasCopiedHash(false), 2000);
   };
 
+  // Re-Score Dataset Trigger
+  const handleReloadDataset = async () => {
+    setIsLoading(true);
+    showToast('Re-scoring entire graph dataset against Graph ML Model...', 'info');
+    const res = await loadDataset();
+    if (res) {
+      setDatasetStatus(res);
+      await loadDatasetDetails();
+      await handleRunTrace(targetAddress);
+      showToast(`Dataset re-scored: ${res.total_transactions} txs, ${res.culprits_detected} culprits identified!`, 'success');
+    }
+    setIsLoading(false);
+  };
+
   // Generate BNSS Dossier
-  const handleGenerateDossier = async () => {
-    showToast('Compiling BNSS Sec. 94 Legal Evidence Order...', 'info');
+  const handleGenerateDossier = async (targetWalletParam = null, exchangeParam = null) => {
+    const target = targetWalletParam || targetAddress;
+    const terminal = exchangeParam || traceData.terminalExchange || 'CryptoGlobal Exchange (Hot Wallet 04)';
+
+    showToast(`Compiling BNSS Sec. 94 Legal Order with Culprit KYC for ${target}...`, 'info');
 
     const payload = {
       officerId: 'IO-DELHI-402',
-      targetWallet: targetAddress,
-      terminalExchange: traceData.terminalExchange || 'CryptoGlobal Exchange (Hot Wallet 04)',
+      targetWallet: target,
+      terminalExchange: terminal,
     };
 
     const result = await createBnssRequisition(payload);
     setDossierData(result);
     setIsDossierOpen(true);
-    showToast(`Requisition Dossier ${result.dossierId} sealed!`, 'success');
+    showToast(`Requisition Dossier ${result.dossierId} sealed with KYC Attachment!`, 'success');
+  };
+
+  // Handle Select Culprit from KYC Panel
+  const handleSelectCulpritOnGraph = (walletAddr) => {
+    setActiveTab('WORKSPACE');
+    const found = traceData.nodes.find(n => n.id === walletAddr);
+    if (found) {
+      setSelectedNode(found);
+      showToast(`Located culprit node: ${walletAddr}`, 'info');
+    } else {
+      handleRunTrace(walletAddr);
+    }
   };
 
   // Compute Root Stolen Value
@@ -151,22 +258,89 @@ export default function App() {
               ChainTrace<span>-I4C</span>
             </div>
             <div className="brand-sub">
-              Automated Blockchain Analytics &amp; Off-Ramp Forensics (SIH 2026)
+              Graph ML Fraud Detection &amp; KYC Unmasking Intelligence (SIH 2026)
             </div>
           </div>
         </div>
 
-        <div className="header-center-pill">
-          <span className="pulse-dot"></span>
-          <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-            BNSS Sec. 94 Compliant Digital Evidence Architecture
-          </span>
+        {/* View Navigation Tabs */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          backgroundColor: 'var(--bg-main)',
+          padding: '4px',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--border-subtle)'
+        }}>
+          <button
+            onClick={() => setActiveTab('WORKSPACE')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              borderRadius: 'var(--radius-sm)',
+              border: 'none',
+              backgroundColor: activeTab === 'WORKSPACE' ? '#ffffff' : 'transparent',
+              color: activeTab === 'WORKSPACE' ? 'var(--primary)' : 'var(--text-secondary)',
+              boxShadow: activeTab === 'WORKSPACE' ? 'var(--shadow-sm)' : 'none',
+              cursor: 'pointer'
+            }}
+          >
+            <Layers size={14} />
+            Graph Forensics Canvas
+          </button>
+
+          <button
+            onClick={() => setActiveTab('CULPRITS')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              borderRadius: 'var(--radius-sm)',
+              border: 'none',
+              backgroundColor: activeTab === 'CULPRITS' ? '#ffffff' : 'transparent',
+              color: activeTab === 'CULPRITS' ? 'var(--danger)' : 'var(--text-secondary)',
+              boxShadow: activeTab === 'CULPRITS' ? 'var(--shadow-sm)' : 'none',
+              cursor: 'pointer'
+            }}
+          >
+            <Fingerprint size={14} />
+            Culprit KYC Intelligence ({culprits.length})
+          </button>
+
+          <button
+            onClick={() => setActiveTab('TRANSACTIONS')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              borderRadius: 'var(--radius-sm)',
+              border: 'none',
+              backgroundColor: activeTab === 'TRANSACTIONS' ? '#ffffff' : 'transparent',
+              color: activeTab === 'TRANSACTIONS' ? 'var(--primary)' : 'var(--text-secondary)',
+              boxShadow: activeTab === 'TRANSACTIONS' ? 'var(--shadow-sm)' : 'none',
+              cursor: 'pointer'
+            }}
+          >
+            <Activity size={14} />
+            Scored Transactions ({scoredTransactions.length})
+          </button>
         </div>
 
+        {/* Status & Officer Profile */}
         <div className="header-right">
           <div className={`connection-pill ${isBackendOnline ? 'online' : 'offline'}`}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: isBackendOnline ? 'var(--success)' : 'var(--danger)' }}></span>
-            <span>{isBackendOnline ? `Backend Online (FastAPI v${backendVersion})` : 'Standby Demo Mode'}</span>
+            <span>{isBackendOnline ? `FastAPI v${backendVersion} &bull; Graph Engine Active` : 'Standalone Demo Mode'}</span>
           </div>
 
           <div className="officer-badge">
@@ -179,7 +353,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* 2. Real-Time Controls Ribbon */}
+      {/* 2. Dataset Management & Real-Time Controls Ribbon */}
       <section className="controls-ribbon">
         {/* Search Input */}
         <div className="search-field-group">
@@ -190,7 +364,7 @@ export default function App() {
               value={targetAddress}
               onChange={e => setTargetAddress(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleRunTrace()}
-              placeholder="Enter Target TRC-20 Wallet Address (e.g. 0xVic_9011)..."
+              placeholder="Enter Target Wallet (e.g. 0xVic_9011, 0xConsol_99)..."
               spellCheck={false}
             />
             {targetAddress && (
@@ -211,19 +385,52 @@ export default function App() {
             className={`preset-pill-btn ${targetAddress === '0xVic_9011' ? 'active' : ''}`}
             onClick={() => handleRunTrace('0xVic_9011')}
           >
-            Case 9011 (5-Hop)
-          </button>
-          <button
-            className={`preset-pill-btn ${targetAddress === '0xMule_A1' ? 'active' : ''}`}
-            onClick={() => handleRunTrace('0xMule_A1')}
-          >
-            Mule Cluster A1
+            Victim Exfiltration (9011)
           </button>
           <button
             className={`preset-pill-btn ${targetAddress === '0xConsol_99' ? 'active' : ''}`}
             onClick={() => handleRunTrace('0xConsol_99')}
           >
-            Consolidator 99
+            Syndicate Consolidator 99
+          </button>
+          <button
+            className={`preset-pill-btn ${targetAddress === '0xVASP_GlobalEx' ? 'active' : ''}`}
+            onClick={() => handleRunTrace('0xVASP_GlobalEx')}
+          >
+            Terminal VASP Hot Wallet
+          </button>
+        </div>
+
+        {/* Dataset Status Badge & Re-Score Button */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '4px 10px',
+          backgroundColor: '#f1f5f9',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--border-subtle)'
+        }}>
+          <Database size={13} color="var(--primary)" />
+          <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+            Dataset: <strong>{datasetStatus?.dataset_file || 'blockchain_transactions.csv'}</strong> ({datasetStatus?.total_transactions || 36} txs)
+          </span>
+          <button
+            onClick={handleReloadDataset}
+            disabled={isLoading}
+            style={{
+              padding: '3px 8px',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              backgroundColor: '#ffffff',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: '4px',
+              color: 'var(--primary)',
+              cursor: 'pointer'
+            }}
+            title="Re-run graph model scoring across the entire dataset"
+          >
+            Re-Score
           </button>
         </div>
 
@@ -241,7 +448,7 @@ export default function App() {
           />
         </div>
 
-        {/* Real-Time Playback Particle Speed Controls */}
+        {/* Flow Particle Speed */}
         <div className="playback-controls" title="Real-time fund flow particle controls">
           <button
             className={`btn-icon-play ${isPlaying ? 'active' : ''}`}
@@ -250,31 +457,7 @@ export default function App() {
           >
             {isPlaying ? <Pause size={14} /> : <Play size={14} />}
           </button>
-
-          {[1.0, 2.0, 4.0].map(spd => (
-            <button
-              key={spd}
-              className={`preset-pill-btn ${playbackSpeed === spd ? 'active' : ''}`}
-              style={{ padding: '4px 8px', fontSize: '0.72rem' }}
-              onClick={() => setPlaybackSpeed(spd)}
-            >
-              {spd}x
-            </button>
-          ))}
         </div>
-
-        {/* Auto-Refresh Toggle */}
-        <button
-          className={`preset-pill-btn ${autoRefresh ? 'active' : ''}`}
-          onClick={() => {
-            setAutoRefresh(!autoRefresh);
-            showToast(autoRefresh ? 'Live stream polling paused' : 'Live stream polling active (8s)', 'info');
-          }}
-          title="Auto-refresh graph from blockchain backend"
-        >
-          <RefreshCw size={13} style={{ display: 'inline', marginRight: 4, animation: autoRefresh ? 'spin 2s linear infinite' : 'none' }} />
-          {autoRefresh ? 'Streaming ON' : 'Live Sync'}
-        </button>
 
         {/* Action Button */}
         <button
@@ -283,121 +466,143 @@ export default function App() {
           disabled={isLoading}
         >
           <Zap size={15} />
-          {isLoading ? 'Tracing Graph...' : 'Run 5-Hop BFS Trace'}
+          {isLoading ? 'Scoring Graph...' : 'Evaluate Graph Model'}
         </button>
       </section>
 
-      {/* 3. Main Workspace Grid */}
-      <main className="workspace-grid">
-        {/* Left: Metrics & Dynamic Graph Canvas */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {/* Metrics Ribbon */}
-          <div className="metrics-ribbon">
-            <div className="metric-tile">
-              <div className="metric-tile-title">Terminal Off-Ramp Identified</div>
-              <div className="metric-tile-val" style={{ color: 'var(--danger)' }}>
-                {traceData.terminalExchange ? traceData.terminalExchange.split('(')[0].trim() : 'CryptoGlobal Ex'}
+      {/* 3. Main Workspace Views */}
+      <main style={{ padding: '20px 24px', maxWidth: '1600px', margin: '0 auto', width: '100%' }}>
+        {activeTab === 'WORKSPACE' && (
+          <div className="workspace-grid" style={{ padding: 0 }}>
+            {/* Left: Metrics & Dynamic Graph Canvas */}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {/* Metrics Ribbon */}
+              <div className="metrics-ribbon">
+                <div className="metric-tile">
+                  <div className="metric-tile-title">Terminal Off-Ramp Identified</div>
+                  <div className="metric-tile-val" style={{ color: 'var(--danger)' }}>
+                    {traceData.terminalExchange ? traceData.terminalExchange.split('(')[0].trim() : 'CryptoGlobal Ex'}
+                  </div>
+                  <div className="metric-tile-sub">Seychelles &bull; Non-Compliant Offshore VASP</div>
+                </div>
+
+                <div className="metric-tile">
+                  <div className="metric-tile-title">Culprits Unmasked by Graph ML</div>
+                  <div className="metric-tile-val" style={{ color: 'var(--danger)' }}>
+                    {culprits.length} Culprits Identified
+                  </div>
+                  <div className="metric-tile-sub">Real-World KYC &amp; Downstream Tracing Active</div>
+                </div>
+
+                <div className="metric-tile">
+                  <div className="metric-tile-title">Graph Entities Mapped</div>
+                  <div className="metric-tile-val">
+                    {traceData.nodes.length} Nodes / {traceData.links.length} Links
+                  </div>
+                  <div className="metric-tile-sub">Graph Feature Inference: {traceData.traversalTimeMs} ms</div>
+                </div>
+
+                <div className="metric-tile">
+                  <div className="metric-tile-title">Transactions Scored Against Model</div>
+                  <div className="metric-tile-val" style={{ color: 'var(--primary)' }}>
+                    {scoredTransactions.length} Evaluated
+                  </div>
+                  <div className="metric-tile-sub">
+                    {scoredTransactions.filter(t => t.classification === 'FRAUDULENT').length} Flagged Fraudulent
+                  </div>
+                </div>
               </div>
-              <div className="metric-tile-sub">Seychelles &bull; Non-Compliant Offshore VASP</div>
+
+              {/* Graph Stage Card */}
+              <div className="graph-stage-card">
+                <div className="stage-top-bar">
+                  <div>
+                    <h2 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                      Real-Time Graph ML Fraud Topology Canvas
+                    </h2>
+                    <span style={{ fontSize: '0.73rem', color: 'var(--text-muted)' }}>
+                      Edges scored by model: <span style={{ color: '#ef4444', fontWeight: 700 }}>Red &ge; 70%</span> &bull; <span style={{ color: '#f59e0b', fontWeight: 700 }}>Amber 40-69%</span> &bull; <span style={{ color: '#64748b', fontWeight: 700 }}>Slate &lt; 40%</span>
+                    </span>
+                  </div>
+
+                  <div className="stage-legend">
+                    <div className="legend-chip"><span className="legend-pip pip-victim"></span>Victim</div>
+                    <div className="legend-chip"><span className="legend-pip pip-mule"></span>Flagged Mule</div>
+                    <div className="legend-chip"><span className="legend-pip pip-consol"></span>Consolidator</div>
+                    <div className="legend-chip"><span className="legend-pip pip-vasp"></span>Terminal VASP</div>
+                  </div>
+                </div>
+
+                <ErrorBoundary>
+                  <RealtimeGraphCanvas
+                    traceData={traceData}
+                    selectedNode={selectedNode}
+                    onSelectNode={setSelectedNode}
+                    dustThreshold={dustThreshold}
+                    isPlaying={isPlaying}
+                    playbackSpeed={playbackSpeed}
+                  />
+                </ErrorBoundary>
+              </div>
             </div>
 
-            <div className="metric-tile">
-              <div className="metric-tile-title">Initial Stolen Value Tracked</div>
-              <div className="metric-tile-val" style={{ color: 'var(--primary)' }}>
-                {totalTracked.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
-              </div>
-              <div className="metric-tile-sub">TRC-20 Layering Stream &bull; Max 5 Hops</div>
-            </div>
+            {/* Right: Sidebar with Inspector and Legal Action Card */}
+            <aside className="sidebar-column">
+              <EntityInspector
+                selectedNode={selectedNode}
+                onOpenDossier={handleGenerateDossier}
+                onCopyAddress={handleCopyAddress}
+                hasCopiedAddress={hasCopiedAddress}
+              />
 
-            <div className="metric-tile">
-              <div className="metric-tile-title">Graph Entities Mapped</div>
-              <div className="metric-tile-val">
-                {traceData.nodes.length} Nodes / {traceData.links.length} Links
-              </div>
-              <div className="metric-tile-sub">BFS Traversal Latency: {traceData.traversalTimeMs} ms</div>
-            </div>
+              {/* BNSS Order Action Card */}
+              <div className="bnss-order-card">
+                <div className="order-card-header">
+                  <div className="order-shield-icon">
+                    <Shield size={18} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                      Legal Evidence Order
+                    </h3>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                      BNSS (2023) Section 94 Digital Mandate
+                    </span>
+                  </div>
+                </div>
 
-            <div className="metric-tile">
-              <div className="metric-tile-title">Dynamic Dust Pruning (&lt;{dustThreshold}%)</div>
-              <div className="metric-tile-val" style={{ color: dustThreshold > 1.0 ? 'var(--warning)' : 'var(--text-secondary)' }}>
-                {dustThreshold > 1.0 ? '1 Branch Pruned' : '0 Pruned (Noise Visible)'}
+                <p style={{ padding: '16px 20px 0 20px', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                  Auto-generate a cryptographically verified digital evidence requisition notice with Annexure A (Unmasked Culprit KYC intelligence) to mandate emergency asset freeze.
+                </p>
+
+                <button
+                  className="btn-generate-requisition"
+                  onClick={() => handleGenerateDossier()}
+                >
+                  <FileText size={16} />
+                  Generate BNSS-94 Requisition Dossier
+                </button>
               </div>
-              <div className="metric-tile-sub">
-                {dustThreshold > 1.0 ? '0xDust_Pruned (700 USDT) filtered out' : 'Showing all micro-transfers'}
-              </div>
-            </div>
+            </aside>
           </div>
+        )}
 
-          {/* Graph Stage Card */}
-          <div className="graph-stage-card">
-            <div className="stage-top-bar">
-              <div>
-                <h2 style={{ fontSize: '0.98rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                  Real-Time Topological 5-Hop BFS Graph Canvas
-                </h2>
-                <span style={{ fontSize: '0.73rem', color: 'var(--text-muted)' }}>
-                  Interactive force simulation &bull; Drag nodes freely &bull; Live animated fund flow particles
-                </span>
-              </div>
-
-              <div className="stage-legend">
-                <div className="legend-chip"><span className="legend-pip pip-victim"></span>Victim (Hop 0)</div>
-                <div className="legend-chip"><span className="legend-pip pip-mule"></span>Layering Mule (Hop 1-3)</div>
-                <div className="legend-chip"><span className="legend-pip pip-consol"></span>Consolidator (Hop 4)</div>
-                <div className="legend-chip"><span className="legend-pip pip-vasp"></span>Terminal VASP (Hop 5)</div>
-                <div className="legend-chip"><span className="legend-pip pip-dust"></span>Pruned Dust</div>
-              </div>
-            </div>
-
-            <RealtimeGraphCanvas
-              traceData={traceData}
-              selectedNode={selectedNode}
-              onSelectNode={setSelectedNode}
-              dustThreshold={dustThreshold}
-              isPlaying={isPlaying}
-              playbackSpeed={playbackSpeed}
-            />
-          </div>
-        </div>
-
-        {/* Right: Sidebar with Inspector and Legal Action Card */}
-        <aside className="sidebar-column">
-          <EntityInspector
-            selectedNode={selectedNode}
-            onOpenDossier={handleGenerateDossier}
-            onCopyAddress={handleCopyAddress}
-            hasCopiedAddress={hasCopiedAddress}
+        {/* View 2: Culprit KYC Resolution Panel */}
+        {activeTab === 'CULPRITS' && (
+          <CulpritKYCPanel
+            culprits={culprits}
+            selectedWallet={selectedNode?.id}
+            onSelectCulprit={handleSelectCulpritOnGraph}
+            onGenerateDossier={(wallet, name) => handleGenerateDossier(wallet, name)}
           />
+        )}
 
-          {/* BNSS Order Action Card */}
-          <div className="bnss-order-card">
-            <div className="order-card-header">
-              <div className="order-shield-icon">
-                <Shield size={18} />
-              </div>
-              <div>
-                <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                  Legal Evidence Order
-                </h3>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                  BNSS (2023) Section 94 Digital Mandate
-                </span>
-              </div>
-            </div>
-
-            <p style={{ padding: '16px 20px 0 20px', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Auto-generate a cryptographically verified digital evidence requisition notice under Section 94 of BNSS to mandate emergency freeze of funds at the identified centralized exchange.
-            </p>
-
-            <button
-              className="btn-generate-requisition"
-              onClick={handleGenerateDossier}
-            >
-              <FileText size={16} />
-              Generate BNSS-94 Requisition Dossier
-            </button>
-          </div>
-        </aside>
+        {/* View 3: Scored Transactions Feed */}
+        {activeTab === 'TRANSACTIONS' && (
+          <ScoredTransactionsFeed
+            transactions={scoredTransactions}
+          />
+        )}
       </main>
 
       {/* 4. BNSS Requisition Dossier Modal */}

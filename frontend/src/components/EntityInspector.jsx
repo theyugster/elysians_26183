@@ -1,5 +1,17 @@
-import React from 'react';
-import { Copy, ShieldAlert, Check, AlertTriangle, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import {
+  Copy,
+  Check,
+  UserCheck,
+  CreditCard,
+  MapPin,
+  FileText,
+  Activity,
+  ArrowRight,
+  ShieldAlert,
+  Network
+} from 'lucide-react';
+import { fetchWalletKyc } from '../services/api';
 
 export default function EntityInspector({
   selectedNode,
@@ -7,31 +19,56 @@ export default function EntityInspector({
   onCopyAddress,
   hasCopiedAddress,
 }) {
+  const [kycInfo, setKycInfo] = useState(null);
+  const [isLoadingKyc, setIsLoadingKyc] = useState(false);
+
+  useEffect(() => {
+    if (!selectedNode?.id) {
+      setKycInfo(null);
+      return;
+    }
+
+    let isMounted = true;
+    setIsLoadingKyc(true);
+    fetchWalletKyc(selectedNode.id).then(data => {
+      if (isMounted) {
+        setKycInfo(data);
+        setIsLoadingKyc(false);
+      }
+    });
+
+    return () => { isMounted = false; };
+  }, [selectedNode?.id]);
+
   if (!selectedNode) {
     return (
       <div className="inspector-card">
         <div className="inspector-header">
-          <h3 className="panel-title">Entity Heuristic Inspector</h3>
+          <h3 className="panel-title">Graph Intelligence Inspector</h3>
         </div>
         <div className="inspector-body" style={{ color: 'var(--text-muted)', fontSize: '0.84rem' }}>
-          Select any node in the graph to inspect its multi-signal attribution breakdown.
+          Select any node in the graph to inspect its model scoring and KYC identity profile.
         </div>
       </div>
     );
   }
 
-  const h = selectedNode.heuristics || { vaspMatch: 10, sweeper: 15, gasSponsor: 0, fanIn: 15 };
   const isVasp = selectedNode.type === 'exchange';
   const isVictim = selectedNode.type === 'victim';
-
+  const isCulprit = selectedNode.isCulprit || selectedNode.riskScore >= 65;
   const clusterClass = isVasp ? 'exchange' : (isVictim ? 'victim' : 'mule');
+
+  const identity = kycInfo?.identity || {};
+  const isDirect = kycInfo?.match_type === 'DIRECT_KYC_MATCH';
+  const isOfframpTraced = kycInfo?.match_type === 'DOWNSTREAM_OFFRAMP_LINKAGE';
+  const hasIdentity = identity.primary_beneficiary && !identity.primary_beneficiary.includes('Unknown');
 
   return (
     <div className="inspector-card">
       <div className="inspector-header">
-        <h3 className="panel-title">Entity Heuristic Inspector</h3>
+        <h3 className="panel-title">Graph Intelligence Inspector</h3>
         <span className={`cluster-type-badge ${clusterClass}`}>
-          {selectedNode.cluster || (isVasp ? 'Terminal Off-Ramp' : 'Layering Mule')}
+          {selectedNode.role || (isVasp ? 'Terminal Off-Ramp' : (isVictim ? 'Victim Source' : 'Layering Mule'))}
         </span>
       </div>
 
@@ -39,7 +76,7 @@ export default function EntityInspector({
         {/* Entity Identity & Address */}
         <div className="entity-identity-block">
           <span style={{ fontSize: '0.94rem', fontWeight: 800, color: 'var(--text-primary)', display: 'block' }}>
-            {selectedNode.label}
+            {selectedNode.label || selectedNode.id}
           </span>
 
           <div className="address-chip-row">
@@ -55,96 +92,189 @@ export default function EntityInspector({
 
           <div className="dual-stats-grid">
             <div className="stat-cell">
-              <span className="stat-cell-label">Current Balance</span>
-              <div className="stat-cell-val">{selectedNode.balance || '0.00 USDT'}</div>
+              <span className="stat-cell-label">Culprit Status</span>
+              <div className="stat-cell-val" style={{
+                color: isCulprit ? 'var(--danger)' : 'var(--success)',
+                fontSize: '0.82rem'
+              }}>
+                {isCulprit ? 'FLAGGED CULPRIT' : (isVictim ? 'VICTIM' : 'LICIT')}
+              </div>
             </div>
 
             <div className="stat-cell">
-              <span className="stat-cell-label">Composite Threat</span>
-              <div className="stat-cell-val" style={{ color: isVasp || selectedNode.riskScore >= 70 ? 'var(--danger)' : 'var(--primary)' }}>
+              <span className="stat-cell-label">Model Threat Score</span>
+              <div className="stat-cell-val" style={{
+                color: selectedNode.riskScore >= 70 ? 'var(--danger)' : (selectedNode.riskScore >= 40 ? 'var(--warning)' : 'var(--primary)')
+              }}>
                 {selectedNode.riskScore} / 100
               </div>
             </div>
           </div>
         </div>
 
-        {/* 4-Signal Explainable Attribution Matrix (Slide 3 & 4) */}
-        <div className="matrix-container">
-          <span style={{ fontSize: '0.74rem', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.04em', color: 'var(--text-secondary)' }}>
-            4-Signal Attribution Matrix (Slide 3)
-          </span>
-
-          {/* 1. VASP Match */}
-          <div className="matrix-row">
-            <div className="matrix-meta">
-              <span className="matrix-title">1. Known VASP Registry Match</span>
-              <span className="matrix-percent" style={{ color: h.vaspMatch >= 90 ? 'var(--danger)' : 'var(--text-secondary)' }}>
-                {h.vaspMatch}%
+        {/* Resolved KYC Dossier Section */}
+        <div style={{
+          marginTop: '16px',
+          padding: '14px',
+          backgroundColor: '#ffffff',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 'var(--radius-md)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <UserCheck size={15} color={hasIdentity ? 'var(--success)' : 'var(--text-muted)'} />
+              <span style={{ fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-secondary)' }}>
+                KYC Identity Resolution
               </span>
             </div>
-            <div className="matrix-track">
-              <div className="matrix-bar-fill bar-danger" style={{ width: `${h.vaspMatch}%` }}></div>
+
+            {kycInfo && (
+              <span style={{
+                fontSize: '0.66rem',
+                fontWeight: 700,
+                padding: '2px 6px',
+                borderRadius: '3px',
+                backgroundColor: isDirect ? '#dcfce7' : (isOfframpTraced ? '#f3e8ff' : '#f1f5f9'),
+                color: isDirect ? '#15803d' : (isOfframpTraced ? '#7e22ce' : '#64748b')
+              }}>
+                {isDirect ? 'Direct KYC' : (isOfframpTraced ? 'Traced via Off-Ramp' : 'Unhosted Mule')}
+              </span>
+            )}
+          </div>
+
+          {isLoadingKyc ? (
+            <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', padding: '8px 0' }}>
+              Querying KYC Intelligence Engine...
             </div>
-            <span className="matrix-caption">
-              {h.vaspMatch >= 90 ? 
-                'Direct match with registered non-compliant exchange hot wallet.' : 
-                'Unregistered intermediary or non-custodial address.'}
+          ) : hasIdentity ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div>
+                <span style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--text-primary)', display: 'block' }}>
+                  {identity.primary_beneficiary}
+                </span>
+                {identity.entity_name && (
+                  <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                    {identity.entity_name}
+                  </span>
+                )}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '0.72rem' }}>
+                <div>
+                  <span style={{ color: 'var(--text-muted)', display: 'block' }}>National ID</span>
+                  <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
+                    {identity.national_id || 'N/A'}
+                  </span>
+                </div>
+                <div>
+                  <span style={{ color: 'var(--text-muted)', display: 'block' }}>Tax / PAN</span>
+                  <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
+                    {identity.tax_id || 'N/A'}
+                  </span>
+                </div>
+              </div>
+
+              {identity.physical_address && identity.physical_address !== 'N/A' && (
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+                  <MapPin size={12} style={{ flexShrink: 0, marginTop: 2, color: 'var(--primary)' }} />
+                  <span>{identity.physical_address}</span>
+                </div>
+              )}
+
+              {identity.linked_bank_accounts && identity.linked_bank_accounts.length > 0 && (
+                <div style={{
+                  padding: '6px 8px',
+                  backgroundColor: 'var(--bg-main)',
+                  borderRadius: '4px',
+                  border: '1px solid var(--border-subtle)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '0.72rem'
+                }}>
+                  <CreditCard size={12} color="var(--primary)" />
+                  <span style={{ fontWeight: 600 }}>
+                    {identity.linked_bank_accounts[0].bank_name} &bull; {identity.linked_bank_accounts[0].account_number}
+                  </span>
+                </div>
+              )}
+
+              {isOfframpTraced && (
+                <div style={{
+                  padding: '6px 8px',
+                  backgroundColor: '#faf5ff',
+                  border: '1px solid #e9d5ff',
+                  borderRadius: '4px',
+                  fontSize: '0.7rem',
+                  color: '#6b21a8'
+                }}>
+                  Traced downstream ({kycInfo.hops_to_cashout} hop) to terminal off-ramp: <strong>{kycInfo.traced_cashout_wallet}</strong>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', padding: '6px 0' }}>
+              Unhosted Private Wallet (Subpoena required to trace intermediary hops).
+            </div>
+          )}
+        </div>
+
+        {/* Graph Topological Features */}
+        <div style={{
+          marginTop: '16px',
+          padding: '14px',
+          backgroundColor: 'var(--bg-main)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 'var(--radius-md)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+            <Network size={15} color="var(--primary)" />
+            <span style={{ fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-secondary)' }}>
+              Topological Graph Features
             </span>
           </div>
 
-          {/* 2. Sweeper Engine */}
-          <div className="matrix-row">
-            <div className="matrix-meta">
-              <span className="matrix-title">2. Sweeper Engine Score</span>
-              <span className="matrix-percent" style={{ color: 'var(--primary)' }}>
-                {h.sweeper}%
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.74rem' }}>
+            <div style={{ backgroundColor: '#ffffff', padding: '8px', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}>
+              <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.68rem' }}>PageRank Centrality</span>
+              <span style={{ fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                {selectedNode.pagerank !== undefined ? selectedNode.pagerank.toFixed(5) : '0.04210'}
               </span>
             </div>
-            <div className="matrix-track">
-              <div className="matrix-bar-fill bar-primary" style={{ width: `${h.sweeper}%` }}></div>
-            </div>
-            <span className="matrix-caption">
-              {h.sweeper >= 60 ? 
-                'Rapid automated forwarding (< 30s latency) and high-ratio balance emptying pattern detected.' : 
-                'Standard transaction latency and hold duration.'}
-            </span>
-          </div>
 
-          {/* 3. Gas Sponsor */}
-          <div className="matrix-row">
-            <div className="matrix-meta">
-              <span className="matrix-title">3. Gas Sponsor Profiling</span>
-              <span className="matrix-percent" style={{ color: 'var(--purple)' }}>
-                {h.gasSponsor}%
+            <div style={{ backgroundColor: '#ffffff', padding: '8px', borderRadius: '4px', border: '1px solid var(--border-subtle)' }}>
+              <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.68rem' }}>Syndicate Role</span>
+              <span style={{ fontWeight: 700, color: 'var(--primary)' }}>
+                {selectedNode.role || 'LAYER_MULE'}
               </span>
             </div>
-            <div className="matrix-track">
-              <div className="matrix-bar-fill bar-purple" style={{ width: `${h.gasSponsor}%` }}></div>
-            </div>
-            <span className="matrix-caption">
-              {h.gasSponsor >= 50 ? 
-                'Transactions gas-funded by unlinked supplier: 0xGasSponsor_Sybil (Sybil marker).' : 
-                'Self-funding address or native gas holder.'}
-            </span>
           </div>
+        </div>
 
-          {/* 4. Fan-In Consolidation */}
-          <div className="matrix-row">
-            <div className="matrix-meta">
-              <span className="matrix-title">4. Fan-In Consolidation</span>
-              <span className="matrix-percent" style={{ color: 'var(--warning)' }}>
-                {h.fanIn}%
-              </span>
-            </div>
-            <div className="matrix-track">
-              <div className="matrix-bar-fill bar-amber" style={{ width: `${h.fanIn}%` }}></div>
-            </div>
-            <span className="matrix-caption">
-              {h.fanIn >= 65 ? 
-                'Convergence hub: Multiple split mule branches merge into this single consolidating address.' : 
-                'Linear transfer chain without reconvergence.'}
-            </span>
-          </div>
+        {/* Action Button */}
+        <div style={{ marginTop: '16px' }}>
+          <button
+            onClick={() => onOpenDossier && onOpenDossier(selectedNode.id, identity.entity_name || selectedNode.label)}
+            style={{
+              width: '100%',
+              padding: '10px 14px',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              borderRadius: 'var(--radius-md)',
+              border: 'none',
+              backgroundColor: isCulprit ? 'var(--danger)' : 'var(--primary)',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              cursor: 'pointer',
+              boxShadow: 'var(--shadow-sm)'
+            }}
+          >
+            <FileText size={15} />
+            Generate BNSS-94 Order for this Entity
+          </button>
         </div>
       </div>
     </div>

@@ -4,7 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 from app.core.config import settings
 from app.core.database import AsyncSessionLocal, engine, Base
-from app.api import auth, forensics
+from app.api import auth, forensics, graph_fraud
+from app.engine.graph_model import graph_model_engine
 from app.models.wallet import Wallet
 from app.models.transaction import Transaction
 from app.models.vasp import VASPRegistry
@@ -52,17 +53,35 @@ async def seed_demo_blockchain_data():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Ensure tables exist in DB (safety check for standalone / tests / dev)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    # Seed demo data
-    await seed_demo_blockchain_data()
+    # Ensure tables exist in DB (fallback to local SQLite if Postgres is offline / auth fails)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        await seed_demo_blockchain_data()
+    except Exception as db_err:
+        print(f"PostgreSQL unavailable ({db_err}). Switching to local SQLite storage...")
+        import os
+        from sqlalchemy.ext.asyncio import create_async_engine
+        from sqlalchemy.pool import StaticPool
+        sqlite_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "chaintrace.db"))
+        sqlite_url = f"sqlite+aiosqlite:///{sqlite_path}"
+        fallback_engine = create_async_engine(sqlite_url, connect_args={"check_same_thread": False}, poolclass=StaticPool)
+        AsyncSessionLocal.configure(bind=fallback_engine)
+        async with fallback_engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        await seed_demo_blockchain_data()
+
+    # Initialize Graph Machine Learning Fraud Detection Model with valid dataset
+    try:
+        graph_model_engine.load_dataset()
+    except Exception as err:
+        print(f"Graph model startup load warning: {err}")
     yield
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    description="Automated Real-Time Identification of Fraud-Linked Cryptocurrency Exchanges via Automated Blockchain Analytics (SIH 2026)",
-    version="1.0.0",
+    description="Automated Real-Time Identification of Fraud-Linked Cryptocurrency Exchanges via Graph ML Analytics & KYC Intelligence (SIH 2026)",
+    version="2.0.0",
     lifespan=lifespan
 )
 
@@ -77,16 +96,19 @@ app.add_middleware(
 
 app.include_router(auth.router, prefix=settings.API_V1_STR)
 app.include_router(forensics.router, prefix=settings.API_V1_STR)
+app.include_router(graph_fraud.router, prefix=settings.API_V1_STR)
 
 @app.get("/health")
 async def health_check():
     return {
         "status": "online",
-        "system": "ChainTrace-I4C Engine",
-        "version": "2.6",
+        "system": "ChainTrace Graph-ML Engine",
+        "version": "2.0",
         "features": [
-            "5-Hop BFS Traversal",
-            "Multi-Signal Heuristic Matrix",
-            "BNSS Sec. 94 Evidence Requisition"
+            "Graph Topological Feature Extraction (PageRank, HITS, In/Out Ratios)",
+            "Every-Transaction Fraud Probability & Risk Scoring",
+            "Automated Culprit Wallet Identification",
+            "Culprit KYC & Off-Ramp Unmasking Intelligence",
+            "BNSS Sec. 94 Digital Evidence Dossier Generator"
         ]
     }

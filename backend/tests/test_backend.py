@@ -200,7 +200,63 @@ async def run_tests():
         assert len(d_res.json()) >= 1
         print("   [PASS] GET /api/forensics/dossiers listed saved dossiers.")
 
-    print("\nALL 8/8 BACKEND VERIFICATION CHECKS PASSED SUCCESSFULLY!")
+        # --- 5. Graph ML Fraud Detection & Culprit KYC Intelligence Tests ---
+        print("\n5. Testing Graph ML Fraud Engine & KYC Intelligence API...")
+        
+        # Load Dataset / Status
+        ds_res = await client.get("/api/graph-ml/dataset/status")
+        assert ds_res.status_code == 200
+        ds_data = ds_res.json()
+        assert ds_data["total_transactions"] >= 30
+        assert ds_data["unique_wallets"] >= 30
+        assert ds_data["culprits_detected"] >= 5
+        print(f"   [PASS] GET /api/graph-ml/dataset/status verified ({ds_data['total_transactions']} txs, {ds_data['unique_wallets']} wallets, {ds_data['culprits_detected']} culprits).")
+
+        # Graph Analysis
+        ga_res = await client.get("/api/graph-ml/analyze?target=0xVic_9011")
+        assert ga_res.status_code == 200
+        ga_data = ga_res.json()
+        assert len(ga_data["nodes"]) >= 6
+        assert len(ga_data["links"]) >= 6
+        print("   [PASS] GET /api/graph-ml/analyze computed scored graph network.")
+
+        # Scored Transactions Feed
+        tx_scored_res = await client.get("/api/graph-ml/transactions/scored")
+        assert tx_scored_res.status_code == 200
+        tx_list = tx_scored_res.json()
+        assert len(tx_list) >= 30
+        # Verify every transaction has score, classification, and risk factors
+        for tx in tx_list[:10]:
+            assert "fraud_score" in tx
+            assert "fraud_probability" in tx
+            assert tx["classification"] in ["FRAUDULENT", "SUSPICIOUS", "LEGITIMATE"]
+            assert len(tx["risk_factors"]) > 0
+        fraud_txs = [t for t in tx_list if t["classification"] == "FRAUDULENT"]
+        assert len(fraud_txs) >= 3
+        print(f"   [PASS] GET /api/graph-ml/transactions/scored scored {len(tx_list)} transactions (found {len(fraud_txs)} fraudulent transfers).")
+
+        # Identified Culprits with Resolved KYC
+        culprits_res = await client.get("/api/graph-ml/culprits/identified")
+        assert culprits_res.status_code == 200
+        culprits_data = culprits_res.json()
+        assert len(culprits_data) >= 5
+        # Verify KYC unmasking
+        verified_with_kyc = [c for c in culprits_data if c["kyc"]["resolution_status"] in ["IDENTIFIED", "IDENTIFIED_VIA_OFFRAMP"]]
+        assert len(verified_with_kyc) >= 3
+        top_culprit = culprits_data[0]
+        assert top_culprit["kyc"]["identity"]["primary_beneficiary"] is not None
+        print(f"   [PASS] GET /api/graph-ml/culprits/identified unmasked {len(verified_with_kyc)} culprits with KYC intelligence.")
+
+        # Unhosted Mule Downstream Tracing
+        mule_res = await client.get("/api/graph-ml/wallet/0xMule_B1/kyc")
+        assert mule_res.status_code == 200
+        mule_data = mule_res.json()
+        assert mule_data["match_type"] == "DOWNSTREAM_OFFRAMP_LINKAGE"
+        assert mule_data["traced_cashout_wallet"] == "0xConsol_99"
+        assert "Vikram Aditya Malhotra" in mule_data["identity"]["primary_beneficiary"]
+        print("   [PASS] GET /api/graph-ml/wallet/0xMule_B1/kyc successfully traced unhosted mule to Vikram Aditya Malhotra.")
+
+    print("\nALL 13/13 BACKEND VERIFICATION CHECKS PASSED SUCCESSFULLY!")
 
 if __name__ == "__main__":
     asyncio.run(run_tests())

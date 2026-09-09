@@ -197,7 +197,9 @@ export default function RealtimeGraphCanvas({
         const target = nodeMap.get(link.target);
         if (!source || !target) return;
 
-        const isTerminal = target.type === 'exchange';
+        const fScore = link.fraud_score !== undefined ? link.fraud_score : (link.suspiciousScore || 50);
+        const isHighRisk = fScore >= 70 || target.type === 'exchange';
+        const isSuspicious = fScore >= 40 && !isHighRisk;
         const isPruned = link.isPruned;
 
         // Bezier Curve
@@ -216,13 +218,17 @@ export default function RealtimeGraphCanvas({
           ctx.strokeStyle = '#cbd5e1';
           ctx.lineWidth = 1.5;
           ctx.setLineDash([5, 5]);
-        } else if (isTerminal) {
+        } else if (isHighRisk) {
           ctx.strokeStyle = '#ef4444';
           ctx.lineWidth = 2.8;
           ctx.setLineDash([]);
+        } else if (isSuspicious) {
+          ctx.strokeStyle = '#f59e0b';
+          ctx.lineWidth = 2.2;
+          ctx.setLineDash([]);
         } else {
           ctx.strokeStyle = '#94a3b8';
-          ctx.lineWidth = 2.0;
+          ctx.lineWidth = 1.8;
           ctx.setLineDash([]);
         }
         ctx.stroke();
@@ -246,10 +252,12 @@ export default function RealtimeGraphCanvas({
               Math.pow(t, 3) * target.y;
 
             // Particle Glow & Core
+            const particleColor = isHighRisk ? '#dc2626' : (isSuspicious ? '#d97706' : '#2563eb');
+            const shadowColor = isHighRisk ? '#ef4444' : (isSuspicious ? '#f59e0b' : '#3b82f6');
             ctx.beginPath();
-            ctx.arc(px, py, isTerminal ? 4.5 : 3.5, 0, Math.PI * 2);
-            ctx.fillStyle = isTerminal ? '#dc2626' : '#2563eb';
-            ctx.shadowColor = isTerminal ? '#ef4444' : '#3b82f6';
+            ctx.arc(px, py, isHighRisk ? 4.5 : 3.5, 0, Math.PI * 2);
+            ctx.fillStyle = particleColor;
+            ctx.shadowColor = shadowColor;
             ctx.shadowBlur = 8;
             ctx.fill();
             ctx.shadowBlur = 0; // reset
@@ -260,6 +268,7 @@ export default function RealtimeGraphCanvas({
         const badgeX = (source.x + target.x) / 2;
         const badgeY = (source.y + target.y) / 2 - 8;
 
+        const isTerminal = target.type === 'exchange' || isHighRisk;
         ctx.fillStyle = '#ffffff';
         ctx.strokeStyle = isTerminal ? '#fecaca' : '#e2e8f0';
         ctx.lineWidth = 1.2;
@@ -270,7 +279,11 @@ export default function RealtimeGraphCanvas({
         const ry = badgeY - badgeHeight / 2;
 
         ctx.beginPath();
-        ctx.roundRect(rx, ry, badgeWidth, badgeHeight, 9);
+        if (typeof ctx.roundRect === 'function') {
+          ctx.roundRect(rx, ry, badgeWidth, badgeHeight, 9);
+        } else {
+          ctx.rect(rx, ry, badgeWidth, badgeHeight);
+        }
         ctx.fill();
         ctx.stroke();
 

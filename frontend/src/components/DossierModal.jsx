@@ -103,6 +103,65 @@ export default function DossierModal({
                 <li>Furnish complete KYC records, registered IP access logs, associated banking off-ramp channels, and transaction hashes within <strong>24 hours</strong>.</li>
               </ol>
 
+              {/* Annexure A: Resolved Culprit KYC Intelligence */}
+              {dossierData.culpritKYC && dossierData.culpritKYC.identity?.primary_beneficiary && (
+                <div style={{
+                  marginTop: '16px',
+                  marginBottom: '16px',
+                  padding: '14px',
+                  backgroundColor: '#f8fafc',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '6px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                    <Shield size={16} color="var(--danger)" />
+                    <strong style={{ fontSize: '0.82rem', textTransform: 'uppercase', color: 'var(--text-primary)' }}>
+                      ANNEXURE A &bull; RESOLVED CULPRIT KYC DOSSIER (UNMASKED INTELLIGENCE)
+                    </strong>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px', fontSize: '0.78rem' }}>
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', display: 'block' }}>Primary Beneficiary:</span>
+                      <strong style={{ color: 'var(--text-primary)' }}>{dossierData.culpritKYC.identity.primary_beneficiary}</strong>
+                    </div>
+
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', display: 'block' }}>National ID / Passport:</span>
+                      <code style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{dossierData.culpritKYC.identity.national_id || 'N/A'}</code>
+                    </div>
+
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', display: 'block' }}>Tax Identifier:</span>
+                      <code style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{dossierData.culpritKYC.identity.tax_id || 'N/A'}</code>
+                    </div>
+
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', display: 'block' }}>Resolution Mode:</span>
+                      <span style={{ fontWeight: 600, color: dossierData.culpritKYC.match_type === 'DIRECT_KYC_MATCH' ? 'var(--success)' : 'var(--purple)' }}>
+                        {dossierData.culpritKYC.match_type === 'DIRECT_KYC_MATCH' ? 'Direct KYC Record' : 'Downstream Off-Ramp Traced'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {dossierData.culpritKYC.identity.physical_address && (
+                    <div style={{ marginTop: '6px', fontSize: '0.76rem' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Registered Physical Address: </span>
+                      <span>{dossierData.culpritKYC.identity.physical_address}</span>
+                    </div>
+                  )}
+
+                  {dossierData.culpritKYC.identity.linked_bank_accounts?.length > 0 && (
+                    <div style={{ marginTop: '6px', fontSize: '0.76rem' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Linked Banking Channel: </span>
+                      <strong>
+                        {dossierData.culpritKYC.identity.linked_bank_accounts[0].bank_name} &bull; A/C: {dossierData.culpritKYC.identity.linked_bank_accounts[0].account_number} ({dossierData.culpritKYC.identity.linked_bank_accounts[0].ifsc || dossierData.culpritKYC.identity.linked_bank_accounts[0].swift_bic})
+                      </strong>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Cryptographic SHA-256 Audit Seal */}
               <div className="sha256-seal-box">
                 <div style={{ color: 'var(--primary)' }}>
