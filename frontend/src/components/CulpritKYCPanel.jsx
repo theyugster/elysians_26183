@@ -13,7 +13,9 @@ import {
   FileText,
   Search,
   ArrowRight,
-  Fingerprint
+  Fingerprint,
+  AlertTriangle,
+  Eye,
 } from 'lucide-react';
 
 export default function CulpritKYCPanel({
@@ -147,6 +149,17 @@ export default function CulpritKYCPanel({
           const isOfframpTraced = kyc.match_type === 'DOWNSTREAM_OFFRAMP_LINKAGE';
           const hasIdent = identity.primary_beneficiary && !identity.primary_beneficiary.includes('Unknown');
 
+          // SIH 2026 — Unknown VASP Escalation Detection
+          // If exchange behavior detected but identity not in VASP registry,
+          // show "Unidentified Centralized Exchange" and change action button.
+          const isUnknownVASP = (
+            culprit.role === 'CULPRIT_OFFRAMP' &&
+            (!identity.entity_name ||
+             identity.entity_name.includes('Unknown') ||
+             identity.entity_name.includes('Unidentified') ||
+             identity.entity_name.includes('Unhosted'))
+          ) || (identity.entity_name && identity.entity_name.includes('Unidentified'));
+
           return (
             <div
               key={culprit.address || idx}
@@ -223,6 +236,28 @@ export default function CulpritKYCPanel({
                 </div>
               </div>
 
+              {/* SIH 2026 — Unknown VASP Escalation Banner */}
+              {isUnknownVASP && (
+                <div style={{
+                  padding: '12px',
+                  backgroundColor: '#faf5ff',
+                  border: '2px solid #a855f7',
+                  borderRadius: 'var(--radius-sm)',
+                  marginBottom: '10px',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <Eye size={15} color="#7e22ce" />
+                    <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#7e22ce', textTransform: 'uppercase' }}>
+                      Unidentified Centralized Exchange
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.72rem', color: '#6b21a8', margin: 0, lineHeight: 1.5 }}>
+                    Exchange behavioral patterns confirmed but identity not found in VASP registry.
+                    Generate <strong>FIU-IND Escalation Request</strong> for cross-referencing.
+                  </p>
+                </div>
+              )}
+
               {/* Resolved Real-World Identity */}
               <div style={{
                 backgroundColor: 'var(--bg-main)',
@@ -237,8 +272,8 @@ export default function CulpritKYCPanel({
                   </span>
                 </div>
 
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
-                  {identity.primary_beneficiary || 'Pending Intermediary Subpoena'}
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: isUnknownVASP ? '#7e22ce' : 'var(--text-primary)', marginBottom: '4px' }}>
+                  {isUnknownVASP ? 'Unidentified Centralized Exchange' : (identity.primary_beneficiary || 'Pending Intermediary Subpoena')}
                 </div>
 
                 {identity.entity_name && identity.entity_name !== identity.primary_beneficiary && (
@@ -344,7 +379,7 @@ export default function CulpritKYCPanel({
                     fontWeight: 700,
                     borderRadius: 'var(--radius-sm)',
                     border: 'none',
-                    backgroundColor: 'var(--primary)',
+                    backgroundColor: isUnknownVASP ? '#7e22ce' : 'var(--primary)',
                     color: '#ffffff',
                     display: 'flex',
                     alignItems: 'center',
@@ -353,8 +388,8 @@ export default function CulpritKYCPanel({
                     cursor: 'pointer'
                   }}
                 >
-                  <FileText size={13} />
-                  Issue BNSS-94
+                  {isUnknownVASP ? <AlertTriangle size={13} /> : <FileText size={13} />}
+                  {isUnknownVASP ? 'Export FIU-IND Escalation Request' : 'Issue BNSS-94'}
                 </button>
               </div>
             </div>

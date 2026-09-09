@@ -6,7 +6,7 @@ from app.core.config import settings
 from app.core.database import AsyncSessionLocal, engine, Base
 from app.api import auth, forensics, graph_fraud
 from app.engine.graph_model import graph_model_engine
-from app.models.wallet import Wallet
+from app.models.wallet import Wallet, WatchlistWallet, WatchlistAlert
 from app.models.transaction import Transaction
 from app.models.vasp import VASPRegistry
 

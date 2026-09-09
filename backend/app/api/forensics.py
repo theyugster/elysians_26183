@@ -21,14 +21,20 @@ from app.models.transaction import Transaction
 
 router = APIRouter(prefix="/forensics", tags=["Forensics Engine"])
 
-@router.get("/trace", response_model=ForensicTraceResponse)
+@router.get("/trace")
 async def trace_target(
     target: str = Query(default="0xVic_9011", description="Victim Wallet Address or Tx Hash"),
+    hops: int = Query(default=5, ge=1, le=10, description="Max BFS traversal hops (default 5, max 10)"),
     db: AsyncSession = Depends(get_db)
 ):
-    nodes, links, terminal_exchange, pruned_count, exec_time = await run_5hop_bfs_traversal(
-        db=db, 
-        root_target=target
+    """
+    SIH 2026 — Enhanced forensic trace with configurable hops,
+    ML attribution, confidence gating, and chain break detection.
+    """
+    nodes, links, terminal_exchange, pruned_count, exec_time, enrichment = await run_5hop_bfs_traversal(
+        db=db,
+        root_target=target,
+        max_hops=hops,
     )
     return {
         "target": target,
@@ -37,7 +43,14 @@ async def trace_target(
         "nodesCount": len(nodes),
         "prunedDustBranches": pruned_count,
         "nodes": nodes,
-        "links": links
+        "links": links,
+        # SIH 2026 — Enrichment metadata for frontend consumption
+        "valueContinuity": enrichment.get("valueContinuity"),
+        "chainBreaks": enrichment.get("chainBreaks", []),
+        "unknownVasps": enrichment.get("unknownVasps", []),
+        "confidenceGate": enrichment.get("confidenceGate"),
+        "hopLimitJustification": enrichment.get("hopLimitJustification"),
+        "cacheArchitecture": enrichment.get("cacheArchitecture"),
     }
 
 @router.get("/stats", response_model=SystemStatsResponse)

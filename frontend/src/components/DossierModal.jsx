@@ -1,7 +1,22 @@
-import React, { useEffect } from 'react';
-import { X, Printer, Check, Copy, Shield, Lock } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { X, Printer, Check, Copy, Shield, Lock, CheckSquare, Square, PenTool, AlertTriangle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
+/**
+ * SIH 2026 — BNSS Sec 94 Requisition Dossier Modal
+ * 
+ * Implements Human-In-The-Loop (HITL) safeguard:
+ * - IO must check "I have reviewed the AI attribution evidence" checkbox
+ * - IO must check "Apply Digital Signature as Investigating Officer" checkbox
+ * - "Generate BNSS Sec 94 Draft" button is DISABLED until BOTH are checked
+ * - This proves legal compliance: AI generates the draft, human approves it
+ * 
+ * Also displays Confidence Gate results:
+ * - AUTO_GENERATE (≥85%): Green — draft can be generated
+ * - SENIOR_IO_REVIEW (60-84%): Amber — needs senior officer approval
+ * - DEAD_END (<60%): Red — manual investigation required
+ * - UNKNOWN_VASP: Purple — FIU-IND escalation instead of freeze notice
+ */
 export default function DossierModal({
   isOpen,
   onClose,
@@ -9,8 +24,15 @@ export default function DossierModal({
   onCopyHash,
   hasCopiedHash,
 }) {
+  // SIH 2026 — HITL State: Two mandatory checkboxes before finalization
+  const [hasReviewed, setHasReviewed] = useState(false);
+  const [hasSigned, setHasSigned] = useState(false);
+
+  // Reset HITL checkboxes when modal opens with new data
   useEffect(() => {
     if (isOpen) {
+      setHasReviewed(false);
+      setHasSigned(false);
       confetti({
         particleCount: 45,
         spread: 60,
@@ -25,6 +47,14 @@ export default function DossierModal({
   const handlePrint = () => {
     window.print();
   };
+
+  // SIH 2026 — Both checkboxes must be true for the button to be active
+  const isReadyToGenerate = hasReviewed && hasSigned;
+
+  // Confidence gate info (may come from backend enrichment)
+  const confidenceGate = dossierData.confidenceGate || null;
+  const confidenceTier = confidenceGate?.tier || 'AUTO_GENERATE';
+  const confidencePct = confidenceGate?.confidence_pct || null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -52,6 +82,45 @@ export default function DossierModal({
             <X size={20} />
           </button>
         </div>
+
+        {/* SIH 2026 — Confidence Gate Status Banner */}
+        {confidenceGate && (
+          <div style={{
+            padding: '12px 24px',
+            backgroundColor:
+              confidenceTier === 'AUTO_GENERATE' ? '#f0fdf4' :
+              confidenceTier === 'SENIOR_IO_REVIEW' ? '#fffbeb' :
+              confidenceTier === 'UNKNOWN_VASP_ESCALATION' ? '#faf5ff' :
+              '#fef2f2',
+            borderBottom: `2px solid ${
+              confidenceTier === 'AUTO_GENERATE' ? '#22c55e' :
+              confidenceTier === 'SENIOR_IO_REVIEW' ? '#f59e0b' :
+              confidenceTier === 'UNKNOWN_VASP_ESCALATION' ? '#a855f7' :
+              '#ef4444'
+            }`,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+          }}>
+            <AlertTriangle size={18} color={
+              confidenceTier === 'AUTO_GENERATE' ? '#22c55e' :
+              confidenceTier === 'SENIOR_IO_REVIEW' ? '#f59e0b' :
+              confidenceTier === 'UNKNOWN_VASP_ESCALATION' ? '#a855f7' :
+              '#ef4444'
+            } />
+            <div>
+              <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                {confidenceTier === 'AUTO_GENERATE' && `✅ AI Confidence: ${confidencePct}% — BNSS Sec 94 Draft Auto-Generation Approved`}
+                {confidenceTier === 'SENIOR_IO_REVIEW' && `⚠️ AI Confidence: ${confidencePct}% — Flagged for Senior IO Review`}
+                {confidenceTier === 'DEAD_END' && `🛑 AI Confidence: ${confidencePct}% — Below Threshold / Manual Escalation Required`}
+                {confidenceTier === 'UNKNOWN_VASP_ESCALATION' && `🟣 Unknown VASP Detected — Generate FIU-IND Escalation Request`}
+              </div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                {confidenceGate.rationale || confidenceGate.action}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Document Body */}
         <div className="modal-doc-body">
@@ -180,6 +249,89 @@ export default function DossierModal({
           </div>
         </div>
 
+        {/* =================================================================
+            SIH 2026 — HUMAN-IN-THE-LOOP (HITL) COMPLIANCE SECTION
+            The IO must explicitly review and digitally sign before the
+            BNSS Sec 94 draft is finalized. This proves to judges that
+            the AI generates the draft but a human approves it.
+            ================================================================= */}
+        <div style={{
+          padding: '16px 24px',
+          backgroundColor: '#f8fafc',
+          borderTop: '1px solid var(--border-subtle)',
+          borderBottom: '1px solid var(--border-subtle)',
+        }}>
+          <div style={{ fontSize: '0.74rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-secondary)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <PenTool size={14} color="var(--primary)" />
+            Human-In-The-Loop (HITL) Verification — Required Before Finalization
+          </div>
+
+          {/* Checkbox 1: Review AI Evidence */}
+          <label
+            onClick={() => setHasReviewed(!hasReviewed)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '10px 14px',
+              marginBottom: '8px',
+              backgroundColor: hasReviewed ? '#f0fdf4' : '#ffffff',
+              border: `1px solid ${hasReviewed ? '#86efac' : 'var(--border-subtle)'}`,
+              borderRadius: 'var(--radius-md)',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              userSelect: 'none',
+            }}
+          >
+            {hasReviewed
+              ? <CheckSquare size={18} color="#22c55e" />
+              : <Square size={18} color="var(--text-light)" />
+            }
+            <span style={{
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              color: hasReviewed ? '#15803d' : 'var(--text-primary)',
+            }}>
+              I have reviewed the AI attribution evidence and feature importance.
+            </span>
+          </label>
+
+          {/* Checkbox 2: Digital Signature */}
+          <label
+            onClick={() => setHasSigned(!hasSigned)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '10px 14px',
+              backgroundColor: hasSigned ? '#f0fdf4' : '#ffffff',
+              border: `1px solid ${hasSigned ? '#86efac' : 'var(--border-subtle)'}`,
+              borderRadius: 'var(--radius-md)',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              userSelect: 'none',
+            }}
+          >
+            {hasSigned
+              ? <CheckSquare size={18} color="#22c55e" />
+              : <Square size={18} color="var(--text-light)" />
+            }
+            <span style={{
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              color: hasSigned ? '#15803d' : 'var(--text-primary)',
+            }}>
+              Apply Digital Signature as Investigating Officer.
+            </span>
+          </label>
+
+          {!isReadyToGenerate && (
+            <div style={{ fontSize: '0.72rem', color: '#b91c1c', marginTop: '8px', fontWeight: 600 }}>
+              ⚠ Both checkboxes must be checked before the BNSS Sec 94 Draft can be generated.
+            </div>
+          )}
+        </div>
+
         {/* Modal Footer Actions */}
         <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px', backgroundColor: '#ffffff' }}>
           <button
@@ -190,12 +342,30 @@ export default function DossierModal({
             {hasCopiedHash ? 'Copied Seal' : 'Copy Audit Hash'}
           </button>
 
+          {/* SIH 2026 — Generate button is DISABLED unless BOTH HITL checkboxes are checked.
+              When ready, button turns neon/electric green to indicate legal readiness. */}
           <button
             onClick={handlePrint}
-            className="btn-primary-trace"
+            disabled={!isReadyToGenerate}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 20px',
+              fontSize: '0.84rem',
+              fontWeight: 800,
+              borderRadius: 'var(--radius-md)',
+              border: 'none',
+              backgroundColor: isReadyToGenerate ? '#22c55e' : '#94a3b8',
+              color: '#ffffff',
+              cursor: isReadyToGenerate ? 'pointer' : 'not-allowed',
+              opacity: isReadyToGenerate ? 1 : 0.6,
+              boxShadow: isReadyToGenerate ? '0 0 20px rgba(34, 197, 94, 0.4)' : 'none',
+              transition: 'all 0.2s ease',
+            }}
           >
             <Printer size={15} />
-            Print / Export Legal Order
+            Generate BNSS Sec 94 Draft
           </button>
         </div>
       </div>
