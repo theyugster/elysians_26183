@@ -24,6 +24,27 @@ ChainTrace-I4C is an advanced, production-ready cryptocurrency forensic intellig
  • Every-Transaction Prob. (0-100)  • Anomaly Threat Profiling           • Linked Bank Accounts & IFSC
 ```
 
+```
+
+---
+
+## 2. SIH 2026 Upgrades (New Features)
+
+The following elite features were engineered specifically to win SIH 2026, satisfying strict legal compliance, operational reality, and AI explainability constraints:
+
+1. **Dual-Tier Cache Architecture**: Defends the "sub-10-second" traversal claim by caching known VASP wallets locally in memory (Tier 1), ensuring that O(n) BFS traversal (Tier 2) avoids slow database/RPC lookups for exchange identification.
+2. **Configurable Hop Limits**: BFS traversal defaults to 5 hops (based on empirical evidence that >90% of laundered funds hit an exchange within 5 hops) but is dynamically configurable up to 10 hops for complex layering schemes.
+3. **Value Continuity Check**: Protects innocent co-depositors in exchange pools. If the amount arriving at the terminal off-ramp is drastically higher (>20%) than the victim outflow, the system flags a "High Merge Risk" warning to prevent blanket freeze orders on the entire wallet.
+4. **XGBoost ML Attribution & SHAP**: Brittle rules are replaced with tabular feature extraction and an XGBoost Mock. Crucially, the UI renders the SHAP explainability (Top AI Contributing Features) so Investigating Officers understand *why* the model made its decision.
+5. **Confidence Threshold Gating**: Enforces BNSS Sec 94 compliance:
+   - **≥85% Confidence & 3 Signals**: Auto-generates BNSS Sec 94 draft.
+   - **60-84% Confidence**: Flagged for Senior IO Review (amber alert).
+   - **<60% Confidence**: Dead End (red alert) — mandates manual cyber forensics.
+6. **Chain Break Detection**: Explicitly identifies non-custodial protocols (Mixers, Tornado Cash, DeFi DEXs). Instead of failing silently, the UI flashes a red alert: "Chain Break Detected - Escalate to Manual Investigation."
+7. **Unknown VASP Escalation**: If exchange behavioral patterns are detected but the identity is not in the registry, the system pivots from a BNSS-94 freeze order to an "Export FIU-IND Escalation Request".
+8. **Watchlist Mode**: Evolves the system from reactive to proactive. IOs can add suspected mule wallets to a watchlist; if funds move into those wallets, a background alert is triggered automatically.
+9. **Human-In-The-Loop (HITL) Safeguard**: The BNSS Sec 94 "Generate" button is physically disabled until the IO explicitly checks two boxes: confirming review of AI evidence, and applying a digital signature.
+
 ---
 
 ## 2. Valid Dataset & Storage
